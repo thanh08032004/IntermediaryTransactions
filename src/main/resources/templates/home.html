@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="logo">GDTG Admin</div>
+
+        <ul class="menu">
+            <li class="active">Dashboard</li>
+            <li>Order</li>
+            <li>Customer</li>
+            <li>Transaction</li>
+            <li>Analytics</li>
+            <li>Setting</li>
+        </ul>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main">
+
+        <!-- TOPBAR -->
+        <div class="topbar">
+            <h2>Dashboard</h2>
+            <input type="text" placeholder="Search...">
+        </div>
+
+        <!-- CARDS -->
+        <div class="cards">
+
+            <div class="card">
+                <h3>Total Orders</h3>
+                <p class="number" th:text="${totalOrders}">120</p>
+            </div>
+
+            <div class="card">
+                <h3>Total Customers</h3>
+                <p class="number" th:text="${totalCustomers}">45</p>
+            </div>
+
+            <div class="card">
+                <h3>Total Revenue</h3>
+                <p class="number" th:text="${totalRevenue}">24,000,000</p>
+            </div>
+
+            <div class="card">
+                <h3>Pending Orders</h3>
+                <p class="number" th:text="${pendingOrders}">12</p>
+            </div>
+
+        </div>
+
+        <!-- CONTENT BOX -->
+        <div class="content-box">
+            <h3>Recent Orders</h3>
+
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Buyer</th>
+                    <th>Seller</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="order : ${orders}">
+                    <td th:text="${order.id}">1</td>
+                    <td th:text="${order.buyerName}">Nguyen</td>
+                    <td th:text="${order.sellerName}">Tran</td>
+                    <td th:text="${order.amount}">2,000,000</td>
+                    <td th:text="${order.status}">Pending</td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
