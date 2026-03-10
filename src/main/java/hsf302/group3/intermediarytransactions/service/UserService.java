@@ -30,6 +30,10 @@ public class UserService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
     }
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+    }
 
     @Transactional
     public void createNewUser(User user) {
@@ -107,5 +111,26 @@ public class UserService {
             return ((UserDetails) principal).getUsername();
         }
         return principal.toString();
+    }
+
+    @Transactional
+    public void updateMyProfile(String username, UserProfile updatedProfileData) {
+        User user = findByUsername(username);
+        UserProfile existingProfile = user.getProfile();
+
+        if (existingProfile == null) {
+            updatedProfileData.setUser(user);
+            updatedProfileData.setUserId(user.getId());
+            user.setProfile(updatedProfileData);
+        } else {
+            existingProfile.setFullname(updatedProfileData.getFullname());
+            existingProfile.setEmail(updatedProfileData.getEmail());
+            existingProfile.setPhone(updatedProfileData.getPhone());
+            existingProfile.setAvatar(updatedProfileData.getAvatar());
+            existingProfile.setGender(updatedProfileData.getGender());
+            existingProfile.setDateOfBirth(updatedProfileData.getDateOfBirth());
+            existingProfile.setDescription(updatedProfileData.getDescription());
+        }
+        userRepository.save(user);
     }
 }
