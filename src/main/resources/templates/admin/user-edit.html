@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit User - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Edit User Account</h4>
+            <span class="badge bg-light text-primary" th:text="${'ID: ' + user.id}"></span>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/admin/users/update}" th:object="${user}" method="post">
+                <input type="hidden" th:field="*{id}">
+
+                <div class="row">
+                    <div class="col-md-6 border-end">
+                        <h5 class="mb-3 text-secondary"><i class="bi bi-person-gear"></i> Account Settings</h5>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Username</label>
+                            <input type="text" th:field="*{username}" class="form-control bg-light" readonly>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Role</label>
+                            <select th:field="*{role.id}" class="form-select"
+                                    th:disabled="${user.username == #authentication.name}">
+                                <option th:each="r : ${roles}" th:value="${r.id}" th:text="${r.name}"></option>
+                            </select>
+                            <input type="hidden" th:if="${user.username == #authentication.name}"
+                                   name="role.id" th:value="${user.role.id}">
+                            <div th:if="${user.username == #authentication.name}" class="form-text text-warning">
+                                <i class="bi bi-exclamation-triangle"></i> You cannot change your own role.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold d-block">Account Status</label>
+                            <div class="form-check form-switch mt-2">
+                                <input class="form-check-input" type="checkbox" th:field="*{active}"
+                                       th:disabled="${user.username == #authentication.name}">
+                                <label class="form-check-label" th:text="${user.active ? 'Active' : 'Locked'}"></label>
+                            </div>
+                            <input type="hidden" th:if="${user.username == #authentication.name}"
+                                   name="active" th:value="${user.active}">
+                            <div th:if="${user.username == #authentication.name}" class="form-text text-warning">
+                                <i class="bi bi-exclamation-triangle"></i> You cannot deactivate yourself.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h5 class="mb-3 text-secondary"><i class="bi bi-person-vcard"></i> Profile Information</h5>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Full Name</label>
+                            <input type="text" th:field="*{profile.fullname}" class="form-control"
+                                   placeholder="Enter full name" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Email Address</label>
+                            <input type="email" th:field="*{profile.email}" class="form-control"
+                                   placeholder="example@domain.com">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Phone Number</label>
+                            <input type="text" th:field="*{profile.phone}" class="form-control"
+                                   placeholder="Enter phone number">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 border-top pt-3 d-flex justify-content-end gap-2">
+                    <a href="/admin/users" class="btn btn-secondary px-4">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-success px-4">
+                        <i class="bi bi-check-lg"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

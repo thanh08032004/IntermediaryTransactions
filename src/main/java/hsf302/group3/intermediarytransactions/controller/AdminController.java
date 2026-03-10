@@ -1,0 +1,72 @@
+package hsf302.group3.intermediarytransactions.controller;
+
+import hsf302.group3.intermediarytransactions.entity.User;
+import hsf302.group3.intermediarytransactions.repository.RoleRepository;
+import hsf302.group3.intermediarytransactions.service.UserService;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+@Controller
+@RequestMapping("/admin")
+public class AdminController {
+
+    private final UserService userService;
+    private final RoleRepository roleRepository;
+
+    public AdminController(UserService userService, RoleRepository roleRepository) {
+        this.userService = userService;
+        this.roleRepository = roleRepository;
+    }
+
+    @GetMapping("/users")
+    public String listUsers(Model model) {
+        model.addAttribute("users", userService.getAllUsers());
+        return "admin/user-list";
+    }
+
+    @GetMapping("/users/add")
+    public String addUserForm(Model model) {
+        User user = new User();
+        user.setProfile(new hsf302.group3.intermediarytransactions.entity.UserProfile());
+        model.addAttribute("user", user);
+        model.addAttribute("roles", roleRepository.findAll());
+        return "admin/user-add";
+    }
+
+    @PostMapping("/users/save")
+    public String saveUser(@ModelAttribute("user") User user) {
+        userService.createNewUser(user);
+        return "redirect:/admin/users?success=added";
+    }
+    @GetMapping("/users/edit/{id}")
+    public String editUserForm(@PathVariable Integer id, Model model) {
+        model.addAttribute("user", userService.getUserById(id));
+        model.addAttribute("roles", roleRepository.findAll());
+        return "admin/user-edit";
+    }
+
+    @PostMapping("/users/update")
+    public String updateUser(@ModelAttribute("user") User user) {
+        userService.updateUser(user);
+        return "redirect:/admin/users?success=updated";
+    }
+
+    @GetMapping("/users/delete/{id}")
+    public String deleteUser(@PathVariable Integer id) {
+        userService.deleteUser(id);
+        return "redirect:/admin/users?success=deleted";
+    }
+
+    @PostMapping("/users/toggle/{id}")
+    public String toggleUserStatus(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        try {
+            userService.toggleUserStatus(id);
+            return "redirect:/admin/users?success=status_changed";
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/admin/users";
+        }
+    }
+}

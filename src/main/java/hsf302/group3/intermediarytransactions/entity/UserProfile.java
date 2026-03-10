@@ -1,0 +1,45 @@
+package hsf302.group3.intermediarytransactions.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "user_profile")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserProfile {
+    @Id
+    @Column(name = "user_id")
+    private Integer userId;
+
+    @Column(nullable = false, length = 100)
+    private String fullname;
+
+    @Column(length = 20)
+    private String phone;
+
+    @Column(unique = true, length = 100)
+    private String email;
+
+    private String avatar;
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    public enum Gender {
+        MALE, FEMALE, OTHER
+    }
+}
