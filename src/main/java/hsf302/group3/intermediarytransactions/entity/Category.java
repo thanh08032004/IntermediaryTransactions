@@ -1,5 +1,6 @@
 package hsf302.group3.intermediarytransactions.entity;
 
+import hsf302.group3.intermediarytransactions.util.constant.CategoryStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,4 +22,8 @@ public class Category {
 
     @Column(columnDefinition = "TEXT")
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    private CategoryStatus status = CategoryStatus.ACTIVE;
+
 }

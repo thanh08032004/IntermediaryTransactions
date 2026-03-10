@@ -2,21 +2,27 @@ package hsf302.group3.intermediarytransactions.controller;
 
 import hsf302.group3.intermediarytransactions.entity.Category;
 import hsf302.group3.intermediarytransactions.repository.CategoryRepository;
+import hsf302.group3.intermediarytransactions.repository.ProductRepository;
+import hsf302.group3.intermediarytransactions.util.constant.CategoryStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/admin/categories")
 public class CategoryController {
 
     private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
 
-    public CategoryController(CategoryRepository categoryRepository) {
+    public CategoryController(CategoryRepository categoryRepository,
+                              ProductRepository productRepository) {
         this.categoryRepository = categoryRepository;
+        this.productRepository = productRepository;
     }
 
     @GetMapping
@@ -69,9 +75,33 @@ public class CategoryController {
         return "redirect:/admin/categories?success=updated";
     }
 
+    @PostMapping("/toggle/{id}")
+    public String toggleStatus(@PathVariable Integer id) {
+
+        Category category = categoryRepository.findById(id).orElseThrow();
+
+        if (category.getStatus() == CategoryStatus.ACTIVE) {
+            category.setStatus(CategoryStatus.INACTIVE);
+        } else {
+            category.setStatus(CategoryStatus.ACTIVE);
+        }
+
+        categoryRepository.save(category);
+
+        return "redirect:/admin/categories?success=status_changed";
+    }
+
     @GetMapping("/delete/{id}")
-    public String deleteCategory(@PathVariable Integer id) {
+    public String deleteCategory(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+
+        if(productRepository.existsByCategoryId(id)){
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Cannot delete category because it is used by products.");
+            return "redirect:/admin/categories";
+        }
+
         categoryRepository.deleteById(id);
+
         return "redirect:/admin/categories?success=deleted";
     }
 }
