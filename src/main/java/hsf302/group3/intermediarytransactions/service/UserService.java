@@ -1,7 +1,9 @@
 package hsf302.group3.intermediarytransactions.service;
 
+import hsf302.group3.intermediarytransactions.entity.Role;
 import hsf302.group3.intermediarytransactions.entity.User;
 import hsf302.group3.intermediarytransactions.entity.UserProfile;
+import hsf302.group3.intermediarytransactions.entity.Wallet;
 import hsf302.group3.intermediarytransactions.repository.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -131,6 +134,31 @@ public class UserService {
             existingProfile.setDateOfBirth(updatedProfileData.getDateOfBirth());
             existingProfile.setDescription(updatedProfileData.getDescription());
         }
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void registerNewUser(User user) {
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            throw new RuntimeException("Username is already taken!");
+        }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setActive(true);
+
+        Role userRole = new Role();
+        userRole.setId(2);
+        user.setRole(userRole);
+
+        UserProfile profile = new UserProfile();
+        profile.setUser(user);
+        profile.setFullname(user.getUsername());
+        user.setProfile(profile);
+
+        Wallet wallet = new Wallet();
+        wallet.setUser(user);
+        wallet.setBalance(java.math.BigDecimal.ZERO);
+        user.setWallet(wallet);
         userRepository.save(user);
     }
 }
