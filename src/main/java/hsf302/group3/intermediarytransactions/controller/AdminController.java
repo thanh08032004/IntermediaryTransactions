@@ -3,6 +3,7 @@ package hsf302.group3.intermediarytransactions.controller;
 import hsf302.group3.intermediarytransactions.entity.User;
 import hsf302.group3.intermediarytransactions.repository.RoleRepository;
 import hsf302.group3.intermediarytransactions.service.UserService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +11,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/admin")
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
 
     private final UserService userService;
@@ -21,12 +23,14 @@ public class AdminController {
     }
 
     @GetMapping("/users")
+    @PreAuthorize("hasAuthority('MANAGE_USERS')")
     public String listUsers(Model model) {
         model.addAttribute("users", userService.getAllUsers());
         return "admin/user-list";
     }
 
     @GetMapping("/users/add")
+    @PreAuthorize("hasAuthority('MANAGE_USERS')")
     public String addUserForm(Model model) {
         User user = new User();
         user.setProfile(new hsf302.group3.intermediarytransactions.entity.UserProfile());
@@ -36,11 +40,13 @@ public class AdminController {
     }
 
     @PostMapping("/users/save")
+    @PreAuthorize("hasAuthority('MANAGE_USERS')")
     public String saveUser(@ModelAttribute("user") User user) {
         userService.createNewUser(user);
         return "redirect:/admin/users?success=added";
     }
     @GetMapping("/users/edit/{id}")
+    @PreAuthorize("hasAuthority('MANAGE_USERS')")
     public String editUserForm(@PathVariable Integer id, Model model) {
         model.addAttribute("user", userService.getUserById(id));
         model.addAttribute("roles", roleRepository.findAll());
@@ -48,18 +54,21 @@ public class AdminController {
     }
 
     @PostMapping("/users/update")
+    @PreAuthorize("hasAuthority('MANAGE_USERS')")
     public String updateUser(@ModelAttribute("user") User user) {
         userService.updateUser(user);
         return "redirect:/admin/users?success=updated";
     }
 
     @GetMapping("/users/delete/{id}")
+    @PreAuthorize("hasAuthority('MANAGE_USERS')")
     public String deleteUser(@PathVariable Integer id) {
         userService.deleteUser(id);
         return "redirect:/admin/users?success=deleted";
     }
 
     @PostMapping("/users/toggle/{id}")
+    @PreAuthorize("hasAuthority('MANAGE_USERS')")
     public String toggleUserStatus(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         try {
             userService.toggleUserStatus(id);

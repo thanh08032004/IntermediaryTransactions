@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security6"><head>
     <meta charset="UTF-8">
     <title>Edit Category - Admin</title>
 
@@ -27,7 +27,7 @@
             </span>
         </div>
 
-        <div class="card-body">
+        <div class="card-body" sec:authorize="hasAuthority('MANAGE_CATEGORIES')">
 
             <form th:action="@{/admin/categories/update}"
                   th:object="${category}"

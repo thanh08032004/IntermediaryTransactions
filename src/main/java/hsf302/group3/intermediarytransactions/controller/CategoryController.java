@@ -7,6 +7,7 @@ import hsf302.group3.intermediarytransactions.util.constant.CategoryStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/admin/categories")
+@PreAuthorize("hasRole('ADMIN')")
 public class CategoryController {
 
     private final CategoryRepository categoryRepository;
@@ -26,6 +28,7 @@ public class CategoryController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('MANAGE_CATEGORIES')")
     public String listCategories(
             @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "0") int page,
@@ -52,30 +55,35 @@ public class CategoryController {
     }
 
     @GetMapping("/add")
+    @PreAuthorize("hasAuthority('MANAGE_CATEGORIES')")
     public String addCategoryForm(Model model) {
         model.addAttribute("category", new Category());
         return "admin/category-add";
     }
 
     @PostMapping("/save")
+    @PreAuthorize("hasAuthority('MANAGE_CATEGORIES')")
     public String saveCategory(@ModelAttribute Category category) {
         categoryRepository.save(category);
         return "redirect:/admin/categories?success=added";
     }
 
     @GetMapping("/edit/{id}")
+    @PreAuthorize("hasAuthority('MANAGE_CATEGORIES')")
     public String editCategory(@PathVariable Integer id, Model model) {
         model.addAttribute("category", categoryRepository.findById(id).orElseThrow());
         return "admin/category-edit";
     }
 
     @PostMapping("/update")
+    @PreAuthorize("hasAuthority('MANAGE_CATEGORIES')")
     public String updateCategory(@ModelAttribute Category category) {
         categoryRepository.save(category);
         return "redirect:/admin/categories?success=updated";
     }
 
     @PostMapping("/toggle/{id}")
+    @PreAuthorize("hasAuthority('MANAGE_CATEGORIES')")
     public String toggleStatus(@PathVariable Integer id) {
 
         Category category = categoryRepository.findById(id).orElseThrow();
@@ -92,6 +100,7 @@ public class CategoryController {
     }
 
     @GetMapping("/delete/{id}")
+    @PreAuthorize("hasAuthority('MANAGE_CATEGORIES')")
     public String deleteCategory(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
 
         if(productRepository.existsByCategoryId(id)){

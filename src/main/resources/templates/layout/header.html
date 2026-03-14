@@ -3,125 +3,96 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
 <body>
 
-<nav th:fragment="header" class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
+<nav th:fragment="header" class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm py-2">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="/">HSF System</a>
+        <a class="navbar-brand fw-bold d-flex align-items-center" href="/">
+            <i class="bi bi-cpu-fill me-2 text-primary"></i>
+            <span class="tracking-tight">HSF System</span>
+        </a>
 
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav me-auto">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" href="/market">
-                        <i class="bi bi-shop"></i> Market
-                    </a>
-                </li>
-                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                    <a class="nav-link text-warning" href="/admin/dashboard">
-                        <i class="bi bi-people-fill"></i> Dashboard
+                    <a class="nav-link px-3" href="/market">
+                        <i class="bi bi-shop me-1"></i> Market
                     </a>
                 </li>
 
-                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                    <a class="nav-link text-warning" href="/admin/users">
-                        <i class="bi bi-people-fill"></i> User Management
+                <li class="nav-item dropdown" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link dropdown-toggle text-warning" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-shield-lock me-1"></i> Administration
                     </a>
-                </li>
-
-                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                    <a class="nav-link text-warning" href="/admin/categories">
-                        <i class="bi bi-gear-fill"></i> Category Management
-                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark shadow border-secondary">
+                        <li><a class="dropdown-item" href="/admin/dashboard"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+                        <li><hr class="dropdown-divider border-secondary"></li>
+                        <li><a class="dropdown-item" href="/admin/users"><i class="bi bi-people me-2"></i>Users</a></li>
+                        <li><a class="dropdown-item" href="/admin/categories"><i class="bi bi-grid me-2"></i>Categories</a></li>
+                        <li><a class="dropdown-item" href="/admin/roles"><i class="bi bi-key me-2"></i>Permissions</a></li>
+                    </ul>
                 </li>
             </ul>
 
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center gap-3">
 
-                <!-- Notification -->
-                <div class="dropdown me-3">
-                    <button class="btn btn-outline-light position-relative dropdown-toggle"
-                            type="button"
-                            data-bs-toggle="dropdown">
-
-                        <i class="bi bi-bell"></i>
-
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                              th:text="${unreadCount}">
-        </span>
-
+                <div class="dropdown">
+                    <button class="btn btn-dark border-0 position-relative p-2" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-bell fs-5"></i>
+                        <span th:if="${unreadCount > 0}"
+                              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                              th:text="${unreadCount}" style="font-size: 0.65rem;">0</span>
                     </button>
 
-                    <ul class="dropdown-menu dropdown-menu-end shadow">
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" style="width: 300px; max-height: 400px; overflow-y: auto;">
+                        <li class="dropdown-header border-bottom pb-2 mb-1">Notifications</li>
 
-                        <li class="dropdown-header">Notifications</li>
+                        <li th:if="${#lists.isEmpty(notifications)}">
+                            <span class="dropdown-item text-muted text-center py-3">No notifications</span>
+                        </li>
 
                         <li th:each="noti : ${notifications}">
-                            <a class="dropdown-item d-flex justify-content-between align-items-start"
+                            <a class="dropdown-item py-2 px-3 border-bottom-0"
                                th:href="@{/notifications/read/{id}(id=${noti.id})}"
-
-                               th:classappend="${!noti.isRead} ? 'fw-bold'">
-
-                                <div>
-
-                                    <i class="bi bi-bell text-primary me-2"></i>
-
-                                    <span th:text="${noti.title}"></span>
-
-                                    <br>
-
-                                    <small class="text-muted"
-                                           th:text="${noti.message}">
-                                    </small>
-
+                               th:classappend="${!noti.isRead} ? 'bg-light fw-bold' : ''">
+                                <div class="d-flex align-items-start">
+                                    <div class="flex-shrink-0 mt-1">
+                                        <i class="bi bi-info-circle text-primary"></i>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <div class="text-dark small text-wrap" th:text="${noti.title}">Title</div>
+                                        <div class="text-muted" style="font-size: 0.75rem;" th:text="${noti.message}">Message content...</div>
+                                    </div>
+                                    <span th:if="${!noti.isRead}" class="ms-2 badge bg-primary rounded-circle p-1" style="width:6px; height:6px;"></span>
                                 </div>
-
-                                <!-- chấm xanh -->
-                                <span th:if="${!noti.isRead}"
-                                      style="width:8px;height:8px;background:#0d6efd;border-radius:50%;">
-                                </span>
-
                             </a>
                         </li>
 
                         <li><hr class="dropdown-divider"></li>
-
-                        <li>
-                            <a class="dropdown-item text-center"
-                               th:href="@{/notifications}">
-                                View all notifications
-                            </a>
-                        </li>
-
+                        <li><a class="dropdown-item text-center small text-primary fw-bold" th:href="@{/notifications}">View All</a></li>
                     </ul>
                 </div>
 
-                <!-- Balance -->
-                <div class="text-white me-4">
-                    <i class="bi bi-wallet2 text-success"></i>
-                    <span class="fw-bold">Balance: $0.00</span>
+                <div class="bg-secondary bg-opacity-25 px-3 py-1 rounded-pill d-none d-md-flex align-items-center border border-secondary border-opacity-25">
+                    <i class="bi bi-wallet2 text-success me-2"></i>
+                    <span class="text-white small fw-semibold">Balance: <span class="text-success">$0.00</span></span>
                 </div>
 
-                <!-- User -->
                 <div class="dropdown">
-                    <button class="btn btn-outline-light dropdown-toggle"
-                            type="button"
-                            data-bs-toggle="dropdown">
-                        <i class="bi bi-person-circle"></i>
-                        <span sec:authentication="name">User</span>
+                    <button class="btn btn-outline-light rounded-pill px-3 d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle fs-5"></i>
+                        <span class="small d-none d-sm-inline" sec:authentication="name">User</span>
                     </button>
-
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <a class="dropdown-item" href="/profile">
-                                My Profile
-                            </a>
-                        </li>
-
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                        <li><a class="dropdown-item" href="/profile"><i class="bi bi-person me-2"></i>My Profile</a></li>
+                        <li><a class="dropdown-item" href="/wallet"><i class="bi bi-credit-card me-2"></i>Deposit Money</a></li>
                         <li><hr class="dropdown-divider"></li>
-
                         <li>
                             <form th:action="@{/logout}" method="post">
-                                <button type="submit"
-                                        class="dropdown-item text-danger">
-                                    Sign Out
+                                <button type="submit" class="dropdown-item text-danger d-flex align-items-center">
+                                    <i class="bi bi-box-arrow-right me-2"></i> Sign Out
                                 </button>
                             </form>
                         </li>

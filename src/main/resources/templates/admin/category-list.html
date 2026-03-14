@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
 <head>
     <meta charset="UTF-8">
     <title>Category Management</title>
@@ -21,7 +21,7 @@
             <h4 class="mb-0">Category Management</h4>
 
             <a href="/admin/categories/add"
-               class="btn btn-success btn-sm">
+               class="btn btn-success btn-sm" sec:authorize="hasAuthority('MANAGE_CATEGORIES')">
                 <i class="bi bi-plus-circle"></i> Add Category
             </a>
         </div>
@@ -71,7 +71,7 @@
                         <th>Name</th>
                         <th>Description</th>
                         <th>Status</th>
-                        <th class="text-center">Actions</th>
+                        <th class="text-center" sec:authorize="hasAuthority('MANAGE_CATEGORIES')">Actions</th>
                     </tr>
                     </thead>
 
@@ -143,14 +143,14 @@
                             th:classappend="${currentPage == 0} ? 'disabled'">
 
                             <a class="page-link"
-                               th:href="@{/admin/categories(page=${currentPage-1},keyword=${keyword})}">
+                               th:href="@{/admin/categories(page=${currentPage - 1},keyword=${keyword})}">
                                 Previous
                             </a>
 
                         </li>
 
                         <li class="page-item"
-                            th:each="i : ${#numbers.sequence(0,totalPages-1)}"
+                            th:each="i : ${#numbers.sequence(0,totalPages - 1)}"
                             th:classappend="${i == currentPage} ? 'active'">
 
                             <a class="page-link"

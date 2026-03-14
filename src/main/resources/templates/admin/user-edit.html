@@ -14,7 +14,7 @@
             <h4 class="mb-0">Edit User Account</h4>
             <span class="badge bg-light text-primary" th:text="${'ID: ' + user.id}"></span>
         </div>
-        <div class="card-body">
+        <div class="card-body" sec:authorize="hasAuthority('MANAGE_USERS')">
             <form th:action="@{/admin/users/update}" th:object="${user}" method="post">
                 <input type="hidden" th:field="*{id}">
 

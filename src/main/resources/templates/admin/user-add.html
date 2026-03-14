@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
 <head>
     <title>Add New User - Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -10,7 +11,7 @@
         <div class="card-header bg-success text-white">
             <h4>Create New User Account</h4>
         </div>
-        <div class="card-body">
+        <div class="card-body" sec:authorize="hasAuthority('MANAGE_USERS')">
             <form th:action="@{/admin/users/save}" th:object="${user}" method="post">
                 <div class="row">
                     <div class="col-md-6 border-end">
