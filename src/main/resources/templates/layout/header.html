@@ -38,6 +38,78 @@
 
             <div class="d-flex align-items-center gap-3">
 
+                <!-- Cart (USER only) -->
+                <div class="dropdown" sec:authorize="hasRole('USER')">
+
+                    <button class="btn btn-dark border-0 position-relative p-2"
+                            type="button"
+                            data-bs-toggle="dropdown">
+
+                        <i class="bi bi-cart3 fs-5"></i>
+
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                              style="font-size:0.65rem;">
+                            3
+                        </span>
+                    </button>
+
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2"
+                        style="width:320px; max-height:400px; overflow-y:auto;">
+
+                        <li class="dropdown-header border-bottom pb-2 mb-1">
+                            Your Cart
+                        </li>
+
+                        <!-- Fake item 1 -->
+                        <li>
+                            <div class="dropdown-item py-2 px-3 d-flex justify-content-between">
+                                <div>
+                                    <div class="small fw-bold">RTX 4060</div>
+                                    <div class="text-muted" style="font-size:0.75rem;">$450 x1</div>
+                                </div>
+                                <button class="btn btn-sm btn-outline-danger border-0">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </div>
+                        </li>
+
+                        <!-- Fake item 2 -->
+                        <li>
+                            <div class="dropdown-item py-2 px-3 d-flex justify-content-between">
+                                <div>
+                                    <div class="small fw-bold">SSD Samsung 1TB</div>
+                                    <div class="text-muted" style="font-size:0.75rem;">$120 x2</div>
+                                </div>
+                                <button class="btn btn-sm btn-outline-danger border-0">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </div>
+                        </li>
+
+                        <!-- Fake item 3 -->
+                        <li>
+                            <div class="dropdown-item py-2 px-3 d-flex justify-content-between">
+                                <div>
+                                    <div class="small fw-bold">Mechanical Keyboard</div>
+                                    <div class="text-muted" style="font-size:0.75rem;">$80 x1</div>
+                                </div>
+                                <button class="btn btn-sm btn-outline-danger border-0">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </div>
+                        </li>
+
+                        <li><hr class="dropdown-divider"></li>
+
+                        <li class="px-3 py-2">
+                            <a href="/cart" class="btn btn-primary w-100 btn-sm">
+                                View Cart
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+
                 <div class="dropdown">
                     <button class="btn btn-dark border-0 position-relative p-2" type="button" data-bs-toggle="dropdown">
                         <i class="bi bi-bell fs-5"></i>
