@@ -5,14 +5,26 @@
 }
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Inter', sans-serif;
     background: #f4f6f9;
 }
-
-.layout {
-    display: flex;
+.sidebar .navbar-brand {
+    color: white !important;
 }
-
+.logo {
+    background: rgba(255,255,255,0.1);
+    padding: 10px;
+    border-radius: 10px;
+}
+.sidebar .navbar-brand i {
+    color: #93c5fd !important;
+}
+.header-title {
+    font-weight: 600;
+    font-size: 22px;
+    color: #374151; /* xám đậm mềm hơn đen */
+    letter-spacing: -0.3px; /* chữ gọn lại */
+}
 /* SIDEBAR */
 .sidebar {
     width: 230px;
@@ -108,4 +120,113 @@ thead {
 
 tbody tr:nth-child(even) {
     background: #f2f2f2;
+}
+/* SIDEBAR XỊN */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background: #4B6BC8;
+    position: fixed;
+    color: white;
+    padding: 20px 10px;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+}
+
+.sidebar h4 {
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+/* LINK */
+.sidebar a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    padding: 12px 15px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: 0.3s;
+    margin-bottom: 8px;
+}
+
+/* HOVER */
+.sidebar a:hover {
+    background: rgba(255,255,255,0.2);
+    transform: translateX(5px);
+}
+
+/* ACTIVE */
+.sidebar a.active {
+    background: white;
+    color: #00aaff;
+    font-weight: bold;
+}
+
+/* CONTENT */
+.content {
+    margin-left: 250px;
+    padding: 30px 40px;
+}
+/* HEADER */
+.navbar {
+    margin-left: 250px;                 /* 👈 đẩy sang phải */
+    width: calc(100% - 250px);          /* 👈 không bị tràn */
+    height: 70px;                       /* 👈 cố định chiều cao */
+    display: flex;
+    align-items: center;
+}
+
+/* LOGO */
+.navbar-brand {
+    color: #1e3a8a !important;
+}
+
+/* LINK */
+.navbar .nav-link {
+    color: #374151 !important;
+    font-weight: 500;
+}
+
+.navbar .nav-link:hover {
+    color: #2563eb !important;
+}
+
+/* ICON */
+.navbar i {
+    color: #4b5563;
+}
+
+/* BUTTON (cart, bell, user) */
+.navbar .btn {
+    color: #374151;
+    border-color: #e5e7eb;
+}
+
+.navbar .btn:hover {
+    background: #f3f4f6;
+}
+
+/* BALANCE BOX */
+.navbar .bg-secondary {
+    background: #f3f4f6 !important;
+    border: 1px solid #e5e7eb !important;
+}
+
+.navbar .text-white {
+    color: #111827 !important;
+}
+
+/* DROPDOWN */
+.dropdown-menu {
+    border-radius: 10px;
+}
+.navbar .container-fluid {
+    padding-left: 30px;
+    padding-right: 30px;
+}
+.sidebar {
+    top: 0;          /* 👈 THÊM DÒNG NÀY */
+    left: 0;         /* 👈 THÊM LUÔN */
+    z-index: 1000;   /* 👈 đảm bảo đè header */
 }

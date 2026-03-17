@@ -1,0 +1,61 @@
+<div th:fragment="sidebar" xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
+
+    <div class="sidebar">
+
+        <a class="navbar-brand fw-bold d-flex align-items-center" href="/">
+            <i class="bi bi-cpu-fill me-2 text-primary"></i>
+            <span class="tracking-tight">HSF System</span>
+        </a>
+
+        <!-- COMMON -->
+        <a th:href="@{/}"
+           th:classappend="${currentUri == '/'} ? 'active'">
+            <i class="bi bi-house"></i> Trang chủ
+        </a>
+
+        <!-- ADMIN -->
+        <div sec:authorize="hasRole('ADMIN')">
+
+            <a th:href="@{/admin/products}"
+               th:classappend="${currentUri.startsWith('/admin/products')} ? 'active'">
+                <i class="bi bi-box"></i> Sản phẩm
+            </a>
+
+            <a th:href="@{/admin/users}"
+               th:classappend="${currentUri.startsWith('/admin/users')} ? 'active'">
+                <i class="bi bi-people"></i> Users
+            </a>
+
+            <a th:href="@{/admin/orders}"
+               th:classappend="${currentUri.startsWith('/admin/orders')} ? 'active'">
+                <i class="bi bi-file-earmark"></i> Đơn hàng
+            </a>
+
+        </div>
+
+        <!-- USER -->
+        <div sec:authorize="hasRole('USER')">
+            <a th:href="@{/payment}"
+               th:classappend="${currentUri.startsWith('/payment')} ? 'active'">
+                <i class="bi bi-cart"></i> Nạp tiền
+            </a>
+            <a th:href="@{/products}"
+               th:classappend="${currentUri.startsWith('/products')} ? 'active'">
+                <i class="bi bi-bag"></i> Sản phẩm
+            </a>
+
+            <a th:href="@{/cart}"
+               th:classappend="${currentUri.startsWith('/cart')} ? 'active'">
+                <i class="bi bi-cart"></i> Giỏ hàng
+            </a>
+
+            <a th:href="@{/orders}"
+               th:classappend="${currentUri.startsWith('/orders')} ? 'active'">
+                <i class="bi bi-receipt"></i> Đơn của tôi
+            </a>
+
+        </div>
+
+    </div>
+
+</div>

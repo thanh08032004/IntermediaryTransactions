@@ -17,8 +17,9 @@ public class Wallet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "user_id", unique = true)
-    private Integer userId;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(name = "balance", precision = 15, scale = 2)
     private BigDecimal balance;

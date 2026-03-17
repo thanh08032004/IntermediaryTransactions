@@ -1,14 +1,20 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
+<link rel="stylesheet" th:href="@{/style.css}">
 <body>
 
-<nav th:fragment="header" class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm py-2">
-    <div class="container">
-        <a class="navbar-brand fw-bold d-flex align-items-center" href="/">
-            <i class="bi bi-cpu-fill me-2 text-primary"></i>
-            <span class="tracking-tight">HSF System</span>
-        </a>
+<nav th:fragment="header(pageTitle)"
+     class="navbar navbar-expand-lg bg-white shadow-sm py-2 border-bottom">
+
+    <div class="container-fluid px-4">
+
+        <!-- TITLE -->
+        <h4 class="mb-0 fw-semibold header-title" th:text="${pageTitle}">
+            Default
+        </h4>
+
+        <!-- PHẦN BÊN PHẢI GIỮ NGUYÊN -->
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
             <span class="navbar-toggler-icon"></span>
@@ -16,12 +22,6 @@
 
         <div class="collapse navbar-collapse" id="navbarContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link px-3" href="/market">
-                        <i class="bi bi-shop me-1"></i> Market
-                    </a>
-                </li>
-
                 <li class="nav-item dropdown" sec:authorize="hasRole('ADMIN')">
                     <a class="nav-link dropdown-toggle text-warning" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
                         <i class="bi bi-shield-lock me-1"></i> Administration
@@ -42,9 +42,7 @@
                 <!-- Cart (USER only) -->
                 <div class="dropdown" sec:authorize="hasRole('USER')">
 
-                    <button class="btn btn-dark border-0 position-relative p-2"
-                            type="button"
-                            data-bs-toggle="dropdown">
+                    <button class="btn btn-light position-relative p-2" type="button" data-bs-toggle="dropdown">
 
                         <i class="bi bi-cart3 fs-5"></i>
 
@@ -112,7 +110,7 @@
                 </div>
 
                 <div class="dropdown">
-                    <button class="btn btn-dark border-0 position-relative p-2" type="button" data-bs-toggle="dropdown">
+                    <button class="btn btn-light position-relative p-2" type="button" data-bs-toggle="dropdown">
                         <i class="bi bi-bell fs-5"></i>
                         <span th:if="${unreadCount > 0}"
                               class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"

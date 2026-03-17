@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Service
 @RequiredArgsConstructor
 public class WalletService {
-
+    private final UserRepository userRepository;
     private final WalletRepository walletRepository;
     private final TransactionRepository transactionRepository;
 
@@ -21,9 +21,12 @@ public class WalletService {
     @Transactional
     public void deposit(Integer userId, BigDecimal amount, String description) {
 
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         Wallet wallet = walletRepository.findByUserId(userId)
                 .orElseGet(() -> Wallet.builder()
-                        .userId(userId)
+                        .user(user) // ✅ đúng
                         .balance(BigDecimal.ZERO)
                         .build());
 

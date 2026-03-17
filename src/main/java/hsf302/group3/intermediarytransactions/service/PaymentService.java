@@ -6,6 +6,8 @@ import hsf302.group3.intermediarytransactions.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
@@ -20,7 +22,7 @@ public class PaymentService {
                 .orderCode("ORD_" + System.currentTimeMillis())
                 .userId(userId)
                 .status("PENDING")
-                .totalAmount(amount)
+                .totalAmount(BigDecimal.valueOf(amount))
                 .paymentCode(paymentCode)
                 .paymentStatus(PaymentStatus.PENDING)
                 .build();
