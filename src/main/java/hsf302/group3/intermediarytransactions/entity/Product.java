@@ -8,9 +8,10 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
-@Table(name = "product")
+@Table(name = "products")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -26,6 +27,10 @@ public class Product {
 
     @Column(nullable = false, length = 255)
     private String name;
+
+    // Image Product
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ProductImage> images;
 
     // Category relationship
     @ManyToOne
@@ -45,11 +50,36 @@ public class Product {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    // Status Product
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private Status status;
+    public enum Status {
+        ACTIVE,
+        INACTIVE
+    }
+
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @PrePersist
     public void prePersist() {
         createdAt = LocalDateTime.now();
+    }
+
+    public String getMainImageUrl() {
+        if (images != null) {
+            for (ProductImage img : images) {
+                if (Boolean.TRUE.equals(img.getIsMain())) {
+                    return img.getImageUrl();
+                }
+            }
+            // nếu không có main thì lấy ảnh đầu
+            if (!images.isEmpty()) {
+                return images.get(0).getImageUrl();
+            }
+        }
+        return "/images/default.jpg";
     }
 }
