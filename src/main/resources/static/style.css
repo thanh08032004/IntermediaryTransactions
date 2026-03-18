@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Inter', sans-serif;
-    background: #f4f6f9;
+    background: #f5f6fa;
 }
 .sidebar .navbar-brand {
     color: white !important;
@@ -176,7 +176,16 @@ tbody tr:nth-child(even) {
     display: flex;
     align-items: center;
 }
+.navbar {
+    margin: 15px 20px;
+    margin-left: 270px;
+    width: calc(100% - 290px);
 
+    border-radius: 14px;
+    background: #ffffff;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06); /* 👈 mềm hơn shadow-sm */
+}
 /* LOGO */
 .navbar-brand {
     color: #1e3a8a !important;
