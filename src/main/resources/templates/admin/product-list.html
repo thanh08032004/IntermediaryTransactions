@@ -94,7 +94,9 @@
                         <!-- ACTION -->
                         <td class="text-center">
                             <div class="btn-group">
-                                <a th:href="@{'/admin/products/edit/' + ${product.id}}"
+                                <a th:href="@{'/admin/products/edit/' + ${product.id}
+                                    + '?keyword=' + ${keyword}
+                                    + '&page=' + ${currentPage}}"
                                    class="btn btn-sm btn-outline-primary">
                                     <i class="bi bi-pencil"></i>
                                 </a>
@@ -132,15 +134,12 @@
             <!-- PAGINATION -->
             <nav>
                 <ul class="pagination justify-content-center">
-
                     <li class="page-item"
                         th:classappend="${currentPage == 0} ? 'disabled'">
-
                         <a class="page-link"
                            th:href="@{/admin/products(page=${currentPage - 1},keyword=${keyword})}">
                             Previous
                         </a>
-
                     </li>
 
                     <li class="page-item"

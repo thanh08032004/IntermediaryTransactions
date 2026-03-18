@@ -1,10 +1,12 @@
 package hsf302.group3.intermediarytransactions.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -25,6 +27,7 @@ public class Product {
     @Column(name = "product_code", unique = true, length = 50)
     private String productCode;
 
+    @NotBlank
     @Column(nullable = false, length = 255)
     private String name;
 
@@ -33,6 +36,7 @@ public class Product {
     private List<ProductImage> images;
 
     // Category relationship
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
@@ -51,6 +55,7 @@ public class Product {
     private String description;
 
     // Status Product
+    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status;
