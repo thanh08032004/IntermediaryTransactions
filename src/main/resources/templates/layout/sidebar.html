@@ -66,10 +66,42 @@
                 <i class="bi bi-cart"></i> Giỏ hàng
             </a>
 
-            <a th:href="@{/orders}"
-               th:classappend="${currentUri.startsWith('/orders')} ? 'active'">
-                <i class="bi bi-receipt"></i> Đơn của tôi
+            <a data-bs-toggle="collapse"
+               href="#marketMenu"
+               role="button"
+               aria-expanded="true"
+               class="d-flex justify-content-between align-items-center"
+               th:classappend="${currentUri.startsWith('/market')} ? 'active'">
+
+    <span>
+        <i class="bi bi-arrow-left-right me-2"></i> Trung gian
+    </span>
+                <i class="bi bi-chevron-down"></i>
             </a>
+
+            <div class="collapse show ps-4"
+                 id="marketMenu"
+                 th:classappend="${currentUri.startsWith('/market')} ? 'show'">
+
+                <a th:href="@{/market}"
+                   class="d-block py-2"
+                   th:classappend="${currentUri == '/market'} ? 'active'">
+                    <i class="bi bi-cart me-2"></i> Chợ công khai
+                </a>
+
+                <a th:href="@{/market/my-sell}"
+                   class="d-block py-2"
+                   th:classappend="${currentUri.startsWith('/market/my-sell')} ? 'active'">
+                    <i class="bi bi-cart me-2"></i> Đơn bán của tôi
+                </a>
+
+                <a th:href="@{/market/my-buy}"
+                   class="d-block py-2"
+                   th:classappend="${currentUri.startsWith('/market/my-buy')} ? 'active'">
+                    <i class="bi bi-cart me-2"></i> Đơn mua của tôi
+                </a>
+
+            </div>
 
         </div>
 

@@ -21,9 +21,18 @@ public class Order {
     @Column(name = "order_code", unique = true, nullable = false)
     private String orderCode;
 
+    // ✅ NGƯỜI BÁN
     @Column(name = "user_id", nullable = false)
     private Integer userId;
-
+    @ManyToOne
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private User seller;
+    // ✅ NGƯỜI MUA (NEW)
+    @Column(name = "buyer_id")
+    private Integer buyerId;
+    @ManyToOne
+    @JoinColumn(name = "category_id", insertable = false, updatable = false)
+    private Category category;
     @Column(nullable = false)
     private String status; // PENDING, PROCESSING, COMPLETED, CANCELLED
 
