@@ -1,7 +1,7 @@
 package hsf302.group3.intermediarytransactions.controller;
 
 import hsf302.group3.intermediarytransactions.entity.Product;
-import hsf302.group3.intermediarytransactions.service.ProductService;
+import hsf302.group3.intermediarytransactions.service.ProductAdminService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,7 +21,7 @@ import java.util.List;
 public class AdminProductController {
 
     @Autowired
-    private ProductService productService;
+    private ProductAdminService productAdminService;
 
     // list products + phan trang + search
     @GetMapping
@@ -31,7 +31,7 @@ public class AdminProductController {
             @RequestParam(defaultValue = "5") int size,
             Model model) {
 
-        Page<Product> productPage = productService.searchProducts(keyword, page, size);
+        Page<Product> productPage = productAdminService.searchProducts(keyword, page, size);
 
         model.addAttribute("size", size);
         model.addAttribute("products", productPage.getContent());
@@ -55,11 +55,11 @@ public class AdminProductController {
     ) {
 
         if (result.hasErrors()) {
-            model.addAttribute("categories", productService.getAllCategories());
+            model.addAttribute("categories", productAdminService.getAllCategories());
             return "admin/product-edit";
         }
 
-        productService.updateProductByAdmin(product, images, mainIndex);
+        productAdminService.updateProductByAdmin(product, images, mainIndex);
 
         return "redirect:/admin/products?success=updated&keyword=" + keyword + "&page=" + page;
     }
@@ -68,7 +68,7 @@ public class AdminProductController {
     @GetMapping("/add")
     public String showAddForm(Model model){
         model.addAttribute("product", new Product());
-        model.addAttribute("categories", productService.getAllCategories());
+        model.addAttribute("categories", productAdminService.getAllCategories());
         return "admin/product-add";
     }
     @PostMapping("/add")
@@ -81,11 +81,11 @@ public class AdminProductController {
     ) {
 
         if (result.hasErrors()) {
-            model.addAttribute("categories", productService.getAllCategories());
+            model.addAttribute("categories", productAdminService.getAllCategories());
             return "admin/product-add";
         }
 
-        productService.saveProductWithImages(product, images, mainIndex);
+        productAdminService.saveProductWithImages(product, images, mainIndex);
 
         return "redirect:/admin/products?success=added";
     }
@@ -97,7 +97,7 @@ public class AdminProductController {
                               @RequestParam(defaultValue = "0") int page,
                               Model model){
 
-        Product product = productService.getProductById(id);
+        Product product = productAdminService.getProductById(id);
 
         if (product == null) {
             return "redirect:/admin/products?error=notfound";
@@ -108,7 +108,7 @@ public class AdminProductController {
         }
 
         model.addAttribute("product", product);
-        model.addAttribute("categories", productService.getAllCategories());
+        model.addAttribute("categories", productAdminService.getAllCategories());
         model.addAttribute("keyword", keyword);
         model.addAttribute("page", page);
 
@@ -122,7 +122,7 @@ public class AdminProductController {
             @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "0") int page){
 
-        productService.deleteProduct(id);
+        productAdminService.deleteProduct(id);
         return "redirect:/admin/products?success=deleted&keyword=" + keyword + "&page=" + page;
     }
 
@@ -131,7 +131,7 @@ public class AdminProductController {
             @PathVariable int id,
             @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "0") int page){
-        productService.toggleStatus(id);
+        productAdminService.toggleStatus(id);
         return "redirect:/admin/products?keyword=" + keyword + "&page=" + page;
     }
 }

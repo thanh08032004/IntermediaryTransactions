@@ -16,15 +16,15 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @Service
-public class ProductService {
+public class ProductAdminService {
 
     private final ProductRepository productRepository;
     private final ProductImageRepository productImageRepository;
     private final CategoryRepository categoryRepository;
 
-    public ProductService(ProductRepository productRepository,
-                          CategoryRepository categoryRepository,
-                          ProductImageRepository productImageRepository) {
+    public ProductAdminService(ProductRepository productRepository,
+                               CategoryRepository categoryRepository,
+                               ProductImageRepository productImageRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.productImageRepository = productImageRepository;

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Product</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+</head>
+
+<body class="bg-light">
+<div th:replace="~{layout/header :: header('Thêm sản phẩm')}"></div>
+<div class="container mt-5" style="max-width: 800px">
+
+    <h3 class="mb-4">➕ Add Product</h3>
+
+    <form th:action="@{/admin/products/add}"
+          th:object="${product}"
+          method="post"
+          enctype="multipart/form-data">
+
+        <!-- NAME -->
+        <div class="mb-3">
+            <label class="form-label">Product Name</label>
+            <input type="text" th:field="*{name}" class="form-control">
+            <div class="text-danger" th:errors="*{name}"></div>
+        </div>
+
+        <!-- PRICE -->
+        <div class="mb-3">
+            <label class="form-label">Price</label>
+            <input type="number" step="0.01" th:field="*{price}" class="form-control">
+        </div>
+
+        <!-- QUANTITY -->
+        <div class="mb-3">
+            <label class="form-label">Quantity</label>
+            <input type="number" th:field="*{quantity}" class="form-control">
+        </div>
+
+        <!-- CATEGORY -->
+        <div class="mb-3">
+            <label class="form-label">Category</label>
+            <select th:field="*{category.id}" class="form-select">
+                <option value="">-- Select Category --</option>
+                <option th:each="c : ${categories}"
+                        th:value="${c.id}"
+                        th:text="${c.name}">
+                </option>
+            </select>
+        </div>
+
+        <!-- STATUS -->
+        <div class="mb-3">
+            <label class="form-label">Status</label>
+            <select th:field="*{status}" class="form-select">
+                <option value="ACTIVE">ACTIVE</option>
+                <option value="INACTIVE">INACTIVE</option>
+            </select>
+        </div>
+
+        <!-- DESCRIPTION -->
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea th:field="*{description}" class="form-control"></textarea>
+        </div>
+
+        <!-- UPLOAD MULTIPLE IMAGES -->
+        <div class="mb-3">
+            <label class="form-label">Upload Images</label>
+            <input type="file" name="images" multiple class="form-control" onchange="previewImages(event)">
+        </div>
+
+        <!-- PREVIEW -->
+        <div id="preview" class="mb-3 d-flex flex-wrap gap-2"></div>
+
+        <!-- CHỌN ẢNH CHÍNH -->
+        <div class="mb-3">
+            <label class="form-label">Main Image Index</label>
+            <input type="number" name="mainIndex" class="form-control"
+                   placeholder="Nhập số (0,1,2...)">
+        </div>
+
+        <!-- BUTTON -->
+        <div class="d-flex justify-content-between">
+            <a href="/admin/products" class="btn btn-secondary">⬅ Back</a>
+            <button type="submit" class="btn btn-success">💾 Save</button>
+        </div>
+
+    </form>
+</div>
+
+<script>
+    function previewImages(event) {
+        const preview = document.getElementById('preview');
+        preview.innerHTML = "";
+
+        const files = event.target.files;
+
+        for (let i = 0; i < files.length; i++) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const img = document.createElement("img");
+                img.src = e.target.result;
+                img.style.width = "100px";
+                img.style.height = "100px";
+                img.style.objectFit = "cover";
+                img.classList.add("border");
+                preview.appendChild(img);
+            }
+
+            reader.readAsDataURL(files[i]);
+        }
+    }
+</script>
+
+</body>
+</html>
