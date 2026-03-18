@@ -16,9 +16,11 @@
         <!-- ADMIN -->
         <div sec:authorize="hasRole('ADMIN')">
 
-            <a th:href="@{/admin/products}"
-               th:classappend="${currentUri.startsWith('/admin/products')} ? 'active'">
-                <i class="bi bi-box"></i> Sản phẩm
+            <div class="sidebar-title mt-3">ADMIN</div>
+
+            <a th:href="@{/admin/dashboard}"
+               th:classappend="${currentUri.startsWith('/admin/dashboard')} ? 'active'">
+                <i class="bi bi-speedometer2"></i> Dashboard
             </a>
 
             <a th:href="@{/admin/users}"
@@ -26,16 +28,31 @@
                 <i class="bi bi-people"></i> Users
             </a>
 
+            <a th:href="@{/admin/categories}"
+               th:classappend="${currentUri.startsWith('/admin/categories')} ? 'active'">
+                <i class="bi bi-grid"></i> Categories
+            </a>
+
+            <a th:href="@{/admin/products}"
+               th:classappend="${currentUri.startsWith('/admin/products')} ? 'active'">
+                <i class="bi bi-box-seam"></i> Products
+            </a>
+
+            <a th:href="@{/admin/roles}"
+               th:classappend="${currentUri.startsWith('/admin/roles')} ? 'active'">
+                <i class="bi bi-key"></i> Permissions
+            </a>
+
             <a th:href="@{/admin/orders}"
                th:classappend="${currentUri.startsWith('/admin/orders')} ? 'active'">
-                <i class="bi bi-file-earmark"></i> Đơn hàng
+                <i class="bi bi-receipt"></i> Orders
             </a>
 
         </div>
 
         <!-- USER -->
         <div sec:authorize="hasRole('USER')">
-            <a th:href="@{/payment}"
+            <a th:href="@{/payment-request}"
                th:classappend="${currentUri.startsWith('/payment')} ? 'active'">
                 <i class="bi bi-cart"></i> Nạp tiền
             </a>

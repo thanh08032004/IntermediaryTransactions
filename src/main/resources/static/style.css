@@ -73,7 +73,13 @@ body {
     padding: 8px;
     width: 200px;
 }
-
+.sidebar-title {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: #999;
+    margin: 10px 0 5px 10px;
+    font-weight: 600;
+}
 /* CARDS */
 .cards {
     display: flex;

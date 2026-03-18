@@ -1,0 +1,99 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
+<head>
+    <meta charset="UTF-8">
+    <title>Nạp tiền</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+</head>
+
+<body class="bg-light">
+
+<div th:replace="~{layout/header :: header('Nạp tiền')}"></div>
+
+<div class="layout">
+    <div th:replace="~{layout/sidebar :: sidebar}"></div>
+
+    <div class="content">
+        <div class="container mt-5">
+
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+
+                    <div class="card shadow-sm border-0">
+
+                        <div class="card-header text-center fw-bold">
+                            💰 Nạp tiền vào ví
+                        </div>
+
+                        <div class="card-body">
+
+                            <!-- ERROR -->
+                            <div th:if="${error}" class="alert alert-danger text-center">
+                                <span th:text="${error}"></span>
+                            </div>
+
+                            <!-- QUICK -->
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Chọn nhanh</label>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <button type="button" class="btn btn-outline-primary amount-btn" data-value="50000">50K</button>
+                                    <button type="button" class="btn btn-outline-primary amount-btn" data-value="100000">100K</button>
+                                    <button type="button" class="btn btn-outline-primary amount-btn" data-value="200000">200K</button>
+                                    <button type="button" class="btn btn-outline-primary amount-btn" data-value="500000">500K</button>
+                                    <button type="button" class="btn btn-outline-primary amount-btn" data-value="1000000">1M</button>
+                                </div>
+                            </div>
+
+                            <!-- FORM -->
+                            <form action="/deposit" method="post">
+
+                                <!-- CSRF -->
+                                <input type="hidden"
+                                       th:if="${_csrf != null}"
+                                       th:name="${_csrf.parameterName}"
+                                       th:value="${_csrf.token}" />
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Nhập số tiền</label>
+                                    <input type="number"
+                                           id="amountInput"
+                                           name="amount"
+                                           class="form-control"
+                                           placeholder="Ví dụ: 100000"
+                                           required min="10000">
+                                </div>
+
+                                <button class="btn btn-primary w-100">
+                                    Tạo QR thanh toán
+                                </button>
+
+                            </form>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    const buttons = document.querySelectorAll(".amount-btn");
+    const input = document.getElementById("amountInput");
+
+    buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            input.value = btn.dataset.value;
+        });
+    });
+</script>
+
+</body>
+</html>

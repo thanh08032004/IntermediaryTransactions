@@ -38,8 +38,7 @@ public class PaymentController {
         String content = order.getPaymentCode();
 
         // 🔥 convert amount cho chắc
-        String amountStr = order.getTotalAmount()
-                .setScale(0, BigDecimal.ROUND_HALF_UP) // bỏ .00
+        String amountStr = order.getTotalAmount().setScale(0, BigDecimal.ROUND_HALF_UP) // bỏ .00
                 .toPlainString();
 
         String qrUrl = "https://img.vietqr.io/image/MB-0326538343-compact.png"
@@ -52,5 +51,9 @@ public class PaymentController {
         model.addAttribute("orderId", order.getId());
 
         return "payment";
+    }
+    @GetMapping("/payment-request")
+    public String showRequestPage() {
+        return "payment_request"; // trang nhập tiền
     }
 }

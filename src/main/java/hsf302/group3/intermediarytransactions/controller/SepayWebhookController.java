@@ -1,6 +1,7 @@
 package hsf302.group3.intermediarytransactions.controller;
 
 import hsf302.group3.intermediarytransactions.entity.*;
+import hsf302.group3.intermediarytransactions.repository.DepositRequestRepository;
 import hsf302.group3.intermediarytransactions.repository.OrderRepository;
 import hsf302.group3.intermediarytransactions.service.WalletService;
 import lombok.RequiredArgsConstructor;
@@ -15,57 +16,94 @@ public class SepayWebhookController {
 
     private final OrderRepository orderRepository;
     private final WalletService walletService;
+    private final DepositRequestRepository depositRequestRepository;
 
     @PostMapping("/sepay-webhook")
     public String handleWebhook(@RequestBody Map<String, Object> payload) {
 
-        System.out.println("🔥 WEBHOOK RECEIVED: " + payload);
+        System.out.println("🔥 WEBHOOK: " + payload);
 
         String content = (String) payload.get("content");
-        Number amountRaw = (Number) payload.get("transferAmount");
+        Object amountObj = payload.get("transferAmount");
 
-        if (content == null) return "NO CONTENT";
-
-        // 🔍 tìm order
-        Order order = orderRepository.findByPaymentCode(content).orElse(null);
-
-        if (order == null) {
-            return "NOT FOUND";
+        if (content == null || amountObj == null) {
+            return "INVALID DATA";
         }
 
-        // 🛑 tránh cộng tiền 2 lần
-        if (order.getPaymentStatus() == PaymentStatus.SUCCESS) {
-            return "ALREADY PAID";
+        BigDecimal amount = new BigDecimal(amountObj.toString());
+
+        // =========================
+        // 🔵 1. DEPOSIT FLOW
+        // =========================
+        if (content != null && content.contains("DEPOSIT")) {
+
+            // 🔥 tách ID từ chuỗi kiểu: xxx-DEPOSIT4-xxx
+            String depositPart = content.substring(content.indexOf("DEPOSIT") + 7);
+
+            // lấy số phía sau DEPOSIT
+            String idStr = depositPart.split("[^0-9]")[0];
+
+            Long id = Long.parseLong(idStr);
+
+            System.out.println("DEPOSIT ID = " + id);
+
+            DepositRequest req = depositRequestRepository
+                    .findById(Math.toIntExact(id))
+                    .orElse(null);
+
+            if (req == null) return "NOT FOUND";
+
+            if (req.getStatus() == DepositStatus.SUCCESS) {
+                return "ALREADY";
+            }
+
+            if (amount.compareTo(req.getAmount()) < 0) {
+                return "INVALID AMOUNT";
+            }
+
+            req.setStatus(DepositStatus.SUCCESS);
+            depositRequestRepository.save(req);
+
+            System.out.println("CALL DEPOSIT SERVICE");
+
+            walletService.deposit(
+                    req.getUserId(),
+                    req.getAmount(),
+                    "Nap tien - " + content
+            );
+
+            return "OK DEPOSIT";
+        }
+        // =========================
+        // 🟢 2. ORDER FLOW
+        // =========================
+        if (content.startsWith("ORDER_")) {
+
+            Order order = orderRepository.findByPaymentCode(content).orElse(null);
+
+            if (order == null) return "NOT FOUND";
+
+            if (order.getPaymentStatus() == PaymentStatus.SUCCESS) {
+                return "ALREADY PAID";
+            }
+
+            if (amount.compareTo(order.getTotalAmount()) < 0) {
+                return "INVALID AMOUNT";
+            }
+
+            order.setPaymentStatus(PaymentStatus.SUCCESS);
+            order.setStatus("COMPLETED");
+            orderRepository.save(order);
+
+            walletService.deposit(
+                    order.getUserId(),
+                    order.getTotalAmount(),
+                    "Thanh toán - " + content
+            );
+
+            return "OK ORDER";
         }
 
-        // 💰 convert tiền
-        BigDecimal amount = amountRaw != null
-                ? BigDecimal.valueOf(amountRaw.doubleValue())
-                : BigDecimal.ZERO;
-
-        // ❌ check thiếu tiền
-        if (amount.compareTo(order.getTotalAmount()) < 0) {
-            return "INVALID AMOUNT";
-        }
-
-        // =========================
-        // ✅ UPDATE ORDER
-        // =========================
-        order.setPaymentStatus(PaymentStatus.SUCCESS);
-        order.setStatus("COMPLETED");
-        orderRepository.save(order);
-
-        // =========================
-        // 💰 CỘNG TIỀN VÀO VÍ
-        // =========================
-        walletService.deposit(
-                order.getUserId(),
-                order.getTotalAmount(),
-                "Nap tien tu QR - " + order.getPaymentCode()
-        );
-
-        System.out.println("💰 Thanh toán thành công order: " + order.getId());
-
-        return "OK";
+        return "UNKNOWN TYPE";
     }
 }

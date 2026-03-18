@@ -18,7 +18,7 @@ public class Wallet {
     private Integer id;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", unique = true)
     private User user;
 
     @Column(name = "balance", precision = 15, scale = 2)
