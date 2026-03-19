@@ -4,6 +4,7 @@ import hsf302.group3.intermediarytransactions.entity.*;
 import hsf302.group3.intermediarytransactions.repository.DepositRequestRepository;
 import hsf302.group3.intermediarytransactions.repository.OrderRepository;
 import hsf302.group3.intermediarytransactions.service.WalletService;
+import hsf302.group3.intermediarytransactions.util.constant.OrderStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,10 +33,15 @@ public class SepayWebhookController {
 
         BigDecimal amount = new BigDecimal(amountObj.toString());
 
+        // =========================
+        // 🔵 1. DEPOSIT FLOW
+        // =========================
         if (content != null && content.contains("DEPOSIT")) {
 
+            // 🔥 tách ID từ chuỗi kiểu: xxx-DEPOSIT4-xxx
             String depositPart = content.substring(content.indexOf("DEPOSIT") + 7);
 
+            // lấy số phía sau DEPOSIT
             String idStr = depositPart.split("[^0-9]")[0];
 
             Long id = Long.parseLong(idStr);
@@ -69,6 +75,9 @@ public class SepayWebhookController {
 
             return "OK DEPOSIT";
         }
+        // =========================
+        // 🟢 2. ORDER FLOW
+        // =========================
         if (content.startsWith("ORDER_")) {
 
             Order order = orderRepository.findByPaymentCode(content).orElse(null);
@@ -84,11 +93,11 @@ public class SepayWebhookController {
             }
 
             order.setPaymentStatus(PaymentStatus.SUCCESS);
-            order.setStatus(Order.Status.COMPLETED);
+            order.setStatus(OrderStatus.COMPLETED);
             orderRepository.save(order);
 
             walletService.deposit(
-                    order.getSeller().getId(),
+                    order.getBuyer().getId(),
                     order.getTotalAmount(),
                     "Thanh toán - " + content
             );

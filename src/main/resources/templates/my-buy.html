@@ -59,14 +59,18 @@
     </div>
 
     <!-- LIST -->
-    <div th:each="o : ${orders}" class="card mb-3 shadow-sm">
+    <div th:each="o : ${orders}" class="card mb-3 shadow border-0">
 
         <div class="card-body">
 
             <!-- HEADER -->
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between align-items-center">
+
                 <div>
-                    <b th:text="${o.orderCode}"></b>
+                    <h6 class="mb-0 fw-bold" th:text="${o.orderCode}"></h6>
+                    <small class="text-muted"
+                           th:text="${#dates.format(o.createdAt,'dd/MM/yyyy HH:mm')}">
+                    </small>
                 </div>
 
                 <div>
@@ -75,46 +79,48 @@
                     <span class="badge bg-success" th:if="${o.status == 'COMPLETED'}">Hoàn thành</span>
                     <span class="badge bg-danger" th:if="${o.status == 'CANCELLED'}">Đã hủy</span>
                 </div>
+
             </div>
 
             <hr>
 
-            <!-- INFO -->
-            <div class="row">
+            <!-- BODY -->
+            <div class="row align-items-center">
+
                 <div class="col-md-8">
-                    <p>👤 Người bán:
-                        <b th:text="${o.seller != null ? o.seller.username : 'N/A'}"></b>
+                    <p class="mb-1">👤 Người bán:
+                        <b th:text="${o.seller?.username}"></b>
                     </p>
 
-                    <p>💰 Tổng tiền:
-                        <b th:text="${#numbers.formatDecimal(o.totalAmount,0,'COMMA',0,'POINT')}"></b> VND
-                    </p>
-
-                    <p>🕒 Ngày:
-                        <span th:text="${#temporals.format(o.createdAt,'dd/MM/yyyy HH:mm')}"></span>
+                    <p class="mb-0">💰 Tổng tiền:
+                        <span class="text-danger fw-bold"
+                              th:text="${#numbers.formatDecimal(o.totalAmount,0,'COMMA',0,'POINT')}">
+                    </span> đ
                     </p>
                 </div>
 
                 <div class="col-md-4 text-end">
 
-                    <!-- DETAIL -->
                     <a th:href="@{'/market/detail/' + ${o.id}}"
-                       class="btn btn-outline-dark btn-sm mb-2">
+                       class="btn btn-outline-dark btn-sm">
                         Chi tiết
                     </a>
 
-                    <!-- CANCEL -->
                     <form th:if="${o.status == 'PROCESSING'}"
                           th:action="@{'/market/cancel/' + ${o.id}}"
-                          method="post">
-                        <button class="btn btn-danger btn-sm">Hủy đơn</button>
+                          method="post"
+                          class="mt-2">
+
+                        <button class="btn btn-danger btn-sm w-100">
+                            Hủy đơn
+                        </button>
                     </form>
 
                 </div>
+
             </div>
 
         </div>
-
     </div>
 
     <!-- 📄 PAGINATION -->

@@ -56,56 +56,59 @@
     </div>
 
     <!-- LIST -->
-    <div th:each="o : ${orders}" class="card mb-3 shadow-sm">
+    <div th:each="o : ${orders}" class="card mb-3 shadow border-0">
 
         <div class="card-body">
 
             <!-- HEADER -->
-            <div class="d-flex justify-content-between">
-                <b th:text="${o.orderCode}"></b>
+            <div class="d-flex justify-content-between align-items-center">
+
+                <div>
+                    <h6 class="fw-bold mb-0" th:text="${o.orderCode}"></h6>
+                    <small class="text-muted"
+                           th:text="${#dates.format(o.createdAt,'dd/MM/yyyy HH:mm')}">
+                    </small>
+                </div>
 
                 <div>
                     <span class="badge bg-warning" th:if="${o.status == 'SELLING'}">Đang bán</span>
                     <span class="badge bg-info" th:if="${o.status == 'PROCESSING'}">Đang xử lý</span>
                     <span class="badge bg-success" th:if="${o.status == 'COMPLETED'}">Hoàn thành</span>
                 </div>
+
             </div>
 
             <hr>
 
-            <!-- INFO -->
-            <div class="row">
+            <!-- BODY -->
+            <div class="row align-items-center">
 
                 <div class="col-md-8">
-
-                    <p>👤 Người mua:
-                        <b th:text="${o.buyer != null ? o.buyer.username : 'Chưa có'}"></b>
+                    <p class="mb-1">👤 Người mua:
+                        <b th:text="${o.buyer?.username}"></b>
                     </p>
 
-                    <p>💰 Tổng tiền:
-                        <b th:text="${#numbers.formatDecimal(o.totalAmount,0,'COMMA',0,'POINT')}"></b> VND
-                    </p>
-
-                    <p>🕒 Ngày:
-                        <span th:text="${#temporals.format(o.createdAt,'dd/MM/yyyy HH:mm')}"></span>
+                    <p class="mb-0">💰 Tổng tiền:
+                        <span class="text-danger fw-bold"
+                              th:text="${#numbers.formatDecimal(o.totalAmount,0,'COMMA',0,'POINT')}">
+                    </span> đ
                     </p>
                 </div>
 
-                <!-- ACTION -->
                 <div class="col-md-4 text-end">
 
                     <a th:href="@{'/market/detail/' + ${o.id}}"
-                       class="btn btn-outline-dark btn-sm mb-2">
+                       class="btn btn-outline-dark btn-sm">
                         Chi tiết
                     </a>
 
-                    <!-- COMPLETE -->
                     <form th:if="${o.status == 'PROCESSING'}"
                           th:action="@{'/market/complete/' + ${o.id}}"
-                          method="post">
+                          method="post"
+                          class="mt-2">
 
-                        <button class="btn btn-success btn-sm">
-                            Xác nhận hoàn thành
+                        <button class="btn btn-success btn-sm w-100">
+                            Xác nhận
                         </button>
                     </form>
 
@@ -114,7 +117,6 @@
             </div>
 
         </div>
-
     </div>
 
     <!-- 📄 PAGINATION -->

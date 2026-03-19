@@ -4,6 +4,7 @@ import hsf302.group3.intermediarytransactions.entity.Order;
 import hsf302.group3.intermediarytransactions.entity.PaymentStatus;
 import hsf302.group3.intermediarytransactions.entity.User;
 import hsf302.group3.intermediarytransactions.repository.OrderRepository;
+import hsf302.group3.intermediarytransactions.util.constant.OrderStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +27,7 @@ public class PaymentService {
         Order order = Order.builder()
                 .orderCode("ORD_" + System.currentTimeMillis())
                 .seller(seller)
-                .status(Order.Status.PENDING)
+                .status(OrderStatus.PENDING)
                 .totalAmount(BigDecimal.valueOf(amount))
                 .paymentCode(paymentCode)
                 .paymentStatus(PaymentStatus.PENDING)

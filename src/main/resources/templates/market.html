@@ -60,91 +60,87 @@
         <div class="container mt-4">
 
             <!-- FILTER -->
-            <form method="get" th:action="@{/market}">
-                <div class="d-flex gap-2 mb-3">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body">
 
-                    <input type="number" name="minPrice"
-                           class="form-control"
-                           placeholder="Giá từ"
-                           th:value="${minPrice}">
+                    <form method="get" th:action="@{/market}">
+                        <div class="row g-2 align-items-end">
 
-                    <input type="number" name="maxPrice"
-                           class="form-control"
-                           placeholder="Đến"
-                           th:value="${maxPrice}">
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Giá từ</label>
+                                <input type="number" name="minPrice"
+                                       class="form-control"
+                                       th:value="${minPrice}">
+                            </div>
 
-                    <button class="btn btn-danger">
-                        <i class="bi bi-search"></i> Lọc
-                    </button>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Đến</label>
+                                <input type="number" name="maxPrice"
+                                       class="form-control"
+                                       th:value="${maxPrice}">
+                            </div>
+
+                            <div class="col-md-4 d-grid">
+                                <button class="btn btn-danger">
+                                    <i class="bi bi-search"></i> Lọc sản phẩm
+                                </button>
+                            </div>
+
+                        </div>
+                    </form>
+
                 </div>
-            </form>
+            </div>
 
             <!-- TABLE -->
-            <div class="card shadow-sm border-0">
-                <div class="card-body p-0">
+            <div class="card shadow border-0">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">Danh sách sản phẩm</h5>
+                </div>
 
+                <div class="card-body p-0">
                     <table class="table table-hover align-middle mb-0">
 
-                        <!-- HEADER -->
                         <thead class="table-light">
                         <tr>
-                            <th>Hình ảnh</th>
-                            <th>ID</th>
-                            <th>Tên sản phẩm</th>
+                            <th>Hình</th>
+                            <th>Tên</th>
                             <th>Danh mục</th>
-                            <th>Mô tả</th>
                             <th>Giá</th>
-                            <th>Hành động</th>
+                            <th class="text-end">Hành động</th>
                         </tr>
                         </thead>
 
-                        <!-- BODY -->
                         <tbody>
                         <tr th:each="p : ${products}">
 
-                            <!-- IMAGE -->
                             <td>
-                                <img th:src="@{${p.mainImageUrl}}">
+                                <img th:src="@{${p.mainImageUrl}}" style="width:60px;border-radius:8px;">
                             </td>
 
-                            <!-- ID -->
-                            <td th:text="${p.id}"></td>
+                            <td class="fw-semibold" th:text="${p.name}"></td>
 
-                            <!-- NAME -->
-                            <td class="fw-semibold"
-                                th:text="${p.name}"></td>
-
-                            <!-- CATEGORY -->
                             <td>
-                                <span class="badge bg-light text-dark border"
-                                      th:text="${p.category?.name}">
-                                </span>
+                    <span class="badge bg-light text-dark border"
+                          th:text="${p.category?.name}">
+                    </span>
                             </td>
 
-                            <!-- DESCRIPTION -->
-                            <td class="text-muted text-truncate"
-                                style="max-width:200px"
-                                th:text="${p.description}">
-                            </td>
-
-                            <!-- PRICE -->
                             <td class="text-danger fw-bold"
                                 th:text="${#numbers.formatDecimal(p.price,0,'COMMA',0,'POINT')} + ' đ'">
                             </td>
 
-                            <!-- ACTION -->
-                            <td>
-                                <div class="d-flex gap-2">
+                            <td class="text-end">
+                                <div class="d-flex justify-content-end gap-2">
 
                                     <a th:href="@{'/market/product/' + ${p.id}}"
                                        class="btn btn-sm btn-outline-secondary">
                                         Chi tiết
                                     </a>
 
-                                    <form th:action="@{'/cart/add/' + ${p.id}}"
-                                          method="post">
+                                    <form th:action="@{'/cart/add/' + ${p.id}}" method="post">
                                         <button class="btn btn-sm btn-danger">
-                                            Mua
+                                            <i class="bi bi-cart-plus"></i>
                                         </button>
                                     </form>
 
@@ -155,7 +151,6 @@
                         </tbody>
 
                     </table>
-
                 </div>
             </div>
 

@@ -1,247 +1,150 @@
 package hsf302.group3.intermediarytransactions.controller;
 
 import hsf302.group3.intermediarytransactions.entity.Order;
-import hsf302.group3.intermediarytransactions.entity.Product;
-import hsf302.group3.intermediarytransactions.entity.ProductStatus;
 import hsf302.group3.intermediarytransactions.entity.User;
 import hsf302.group3.intermediarytransactions.repository.OrderRepository;
-import hsf302.group3.intermediarytransactions.repository.ProductRepository;
+import hsf302.group3.intermediarytransactions.repository.UserRepository;
+import hsf302.group3.intermediarytransactions.service.MarketService;
+import hsf302.group3.intermediarytransactions.util.SecurityUtil;
+import hsf302.group3.intermediarytransactions.util.constant.OrderStatus;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/market")
+@RequiredArgsConstructor
 public class MarketController {
 
-    @Autowired
-    private OrderRepository orderRepository;
+    private final MarketService marketService;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private ProductRepository productRepository;
-
-    private Integer getUserId(HttpSession session) {
-        return (Integer) session.getAttribute("userId");
+    private Integer getUserId() {
+        String username = SecurityUtil.getCurrentUsername();
+        User user = userRepository.findByUsername(username).orElse(null);
+        return user.getId();
     }
 
-    // =========================
-    // TRANG CHỢ (PRODUCT)
-    // =========================
-    @GetMapping("")
-    public String market(
-            @RequestParam(required = false) Double minPrice,
-            @RequestParam(required = false) Double maxPrice,
-            @RequestParam(defaultValue = "0") int page,
-            Model model) {
+    // MARKET
+//    @GetMapping("")
+//    public String market(Double minPrice, Double maxPrice,
+//                         @RequestParam(defaultValue = "0") int page,
+//                         Model model) {
+//
+//        Pageable pageable = PageRequest.of(page, 6);
+//
+//        Page<Order> orderPage = marketService.getMarketOrders(minPrice, maxPrice, pageable);
+//
+//        model.addAttribute("orders", orderPage.getContent());
+//        model.addAttribute("currentPage", page);
+//        model.addAttribute("totalPages", orderPage.getTotalPages());
+//
+//        return "market";
+//    }
 
-        Pageable pageable = PageRequest.of(page, 6);
-
-        Page<Product> productPage;
-
-        if (minPrice != null && maxPrice != null) {
-            productPage = productRepository.findByStatusAndPriceBetween(
-                    ProductStatus.ACTIVE, minPrice, maxPrice, pageable);
-
-        } else if (minPrice != null) {
-            productPage = productRepository.findByStatusAndPriceGreaterThanEqual(
-                    ProductStatus.ACTIVE, minPrice, pageable);
-
-        } else if (maxPrice != null) {
-            productPage = productRepository.findByStatusAndPriceLessThanEqual(
-                    ProductStatus.ACTIVE, maxPrice, pageable);
-
-        } else {
-            productPage = productRepository.findByStatus(
-                    ProductStatus.ACTIVE, pageable);
-        }
-
-        model.addAttribute("products", productPage.getContent());
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", productPage.getTotalPages());
-        model.addAttribute("minPrice", minPrice);
-        model.addAttribute("maxPrice", maxPrice);
-
-        return "market";
-    }
-
-    // =========================
-    // ĐƠN MUA
-    // =========================
+    // MY BUY
     @GetMapping("/my-buy")
     public String myBuy(
             @RequestParam(defaultValue = "ALL") String status,
             @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "0") int page,
-            Model model,
-            HttpSession session) {
+            Model model) {
 
-        Integer userId = getUserId(session);
+        Integer userId = getUserId();
+
+        if (userId == null) {
+            return "redirect:/login";
+        }
+
         Pageable pageable = PageRequest.of(page, 5);
 
-        Page<Order> orderPage;
+        Page<Order> orderPage =
+                marketService.getMyBuy(userId, status, keyword, pageable);
 
-        if (!status.equalsIgnoreCase("ALL")) {
-
-            Order.Status st = Order.Status.valueOf(status);
-
-            if (!keyword.isEmpty()) {
-                orderPage = orderRepository
-                        .findByBuyer_IdAndStatusAndOrderCodeContainingIgnoreCase(
-                                userId, st, keyword, pageable);
-            } else {
-                orderPage = orderRepository
-                        .findByBuyer_IdAndStatus(userId, st, pageable);
-            }
-
-        } else {
-
-            if (!keyword.isEmpty()) {
-                orderPage = orderRepository
-                        .findByBuyer_IdAndOrderCodeContainingIgnoreCase(
-                                userId, keyword, pageable);
-            } else {
-                orderPage = orderRepository
-                        .findByBuyer_Id(userId, pageable);
-            }
-        }
+        model.addAttribute("currentStatus", status);
+        model.addAttribute("keyword", keyword);
 
         model.addAttribute("orders", orderPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", orderPage.getTotalPages());
-        model.addAttribute("keyword", keyword);
-        model.addAttribute("currentStatus", status);
 
         return "my-buy";
     }
 
-    // =========================
-    // ĐƠN BÁN
-    // =========================
+    // MY SELL
     @GetMapping("/my-sell")
     public String mySell(
             @RequestParam(defaultValue = "ALL") String status,
             @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "0") int page,
-            Model model,
-            HttpSession session) {
+            Model model) {
 
-        Integer userId = getUserId(session);
+        Integer userId = getUserId();
+
+        if (userId == null) {
+            return "redirect:/login";
+        }
+
         Pageable pageable = PageRequest.of(page, 5);
 
-        Page<Order> orderPage;
+        Page<Order> orderPage =
+                marketService.getMySell(userId, status, keyword, pageable);
 
-        if (!status.equalsIgnoreCase("ALL")) {
-
-            Order.Status st = Order.Status.valueOf(status);
-
-            if (!keyword.isEmpty()) {
-                orderPage = orderRepository
-                        .findBySeller_IdAndStatusAndOrderCodeContainingIgnoreCase(
-                                userId, st, keyword, pageable);
-            } else {
-                orderPage = orderRepository
-                        .findBySeller_IdAndStatus(userId, st, pageable);
-            }
-
-        } else {
-
-            if (!keyword.isEmpty()) {
-                orderPage = orderRepository
-                        .findBySeller_IdAndOrderCodeContainingIgnoreCase(
-                                userId, keyword, pageable);
-            } else {
-                orderPage = orderRepository
-                        .findBySeller_Id(userId, pageable);
-            }
-        }
+        model.addAttribute("currentStatus", status);
+        model.addAttribute("keyword", keyword);
 
         model.addAttribute("orders", orderPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", orderPage.getTotalPages());
-        model.addAttribute("keyword", keyword);
-        model.addAttribute("currentStatus", status);
 
         return "my-sell";
     }
 
-    // =========================
-    // MUA HÀNG
-    // =========================
+    // BUY
     @PostMapping("/buy/{id}")
-    public String buyOrder(@PathVariable Integer id, HttpSession session) {
+    public String buy(@PathVariable Integer id) {
 
-        Integer userId = getUserId(session);
-        if (userId == null) return "redirect:/login";
+        Integer userId = getUserId();
+        User user = userRepository.findById(userId).orElse(null);
 
-        Order order = orderRepository.findById(id).orElse(null);
-
-        if (order != null && order.getStatus() == Order.Status.PENDING) {
-
-            // không cho tự mua của mình
-            if (userId.equals(order.getSeller().getId())) {
-                return "redirect:/market";
-            }
-
-            User buyer = new User();
-            buyer.setId(userId);
-
-            order.setBuyer(buyer);
-            order.setStatus(Order.Status.PROCESSING);
-
-            orderRepository.save(order);
-        }
+        marketService.buyOrder(id, user);
 
         return "redirect:/market/my-buy";
     }
 
-    // =========================
-    // CHI TIẾT
-    // =========================
+    // CANCEL
+    @PostMapping("/cancel/{id}")
+    public String cancel(@PathVariable Integer id) {
+        marketService.cancelOrder(id);
+        return "redirect:/market/my-buy";
+    }
+
+    // COMPLETE
+    @PostMapping("/complete/{id}")
+    public String complete(@PathVariable Integer id) {
+        marketService.completeOrder(id, getUserId());
+        return "redirect:/market/my-sell";
+    }
+
+    // DETAIL
     @GetMapping("/detail/{id}")
     public String detail(@PathVariable Integer id, Model model) {
 
-        Order order = orderRepository.findById(id).orElse(null);
-        if (order == null) return "redirect:/market";
+        Order order = marketService.getOrderDetail(id);
+
+        if (order == null) {
+            return "redirect:/market/my-buy";
+        }
 
         model.addAttribute("order", order);
+
         return "order-detail";
     }
-
-    // =========================
-    // HỦY
-    // =========================
-    @PostMapping("/cancel/{id}")
-    public String cancelOrder(@PathVariable Integer id) {
-
-        Order order = orderRepository.findById(id).orElse(null);
-
-        if (order != null) {
-            order.setStatus(Order.Status.CANCELLED);
-            orderRepository.save(order);
-        }
-
-        return "redirect:/market/my-buy";
-    }
-
-    // =========================
-    // HOÀN THÀNH
-    // =========================
-    @PostMapping("/complete/{id}")
-    public String complete(@PathVariable Integer id, HttpSession session) {
-
-        Integer userId = getUserId(session);
-        Order order = orderRepository.findById(id).orElse(null);
-
-        if (order != null && userId != null
-                && userId.equals(order.getSeller().getId())) {
-
-            order.setStatus(Order.Status.COMPLETED);
-            orderRepository.save(order);
-        }
-
-        return "redirect:/market/my-sell";
-    }
+    
 }

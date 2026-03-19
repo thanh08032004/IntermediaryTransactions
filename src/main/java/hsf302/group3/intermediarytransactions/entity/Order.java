@@ -1,9 +1,13 @@
 package hsf302.group3.intermediarytransactions.entity;
 
+import hsf302.group3.intermediarytransactions.util.constant.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -18,42 +22,51 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "order_code", unique = true, nullable = false)
+    @Column(name = "order_code", unique = true)
     private String orderCode;
 
-    @ManyToOne
-    @JoinColumn(name = "seller_id", nullable = false)
-    private User seller;
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "buyer_id")
     private User buyer;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seller_id")
+    private User seller;
+
+    @OneToMany(mappedBy = "order",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
+    private List<OrderItem> orderItems = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Status status;
+    @Column(name = "status")
+    private OrderStatus status = OrderStatus.PENDING;
 
-
-    @Column(name = "total_amount", nullable = false)
-    private BigDecimal totalAmount;
-
-    @Column(name = "payment_code", unique = true)
-    private String paymentCode; // mã để đối soát SePay
+    private String paymentCode;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "payment_status", nullable = false)
+    @Column(name = "payment_status")
     private PaymentStatus paymentStatus;
 
-    @Column(name = "created_at", insertable = false, updatable = false)
-    private java.sql.Timestamp createdAt;
+    @Column(name = "total_amount")
+    private BigDecimal totalAmount;
 
-    @Column(name = "updated_at", insertable = false, updatable = false)
-    private java.sql.Timestamp updatedAt;
+    @Column(name = "created_at", updatable = false, insertable = false)
+    private Timestamp createdAt;
 
-    public enum Status {
-        PENDING,
-        PROCESSING,
-        COMPLETED,
-        CANCELLED
+    @Column(name = "updated_at", insertable = false)
+    private Timestamp updatedAt;
+
+    // Helper method
+    public void addItem(OrderItem item) {
+        orderItems.add(item);
+        item.setOrder(this);
+    }
+
+    public void calculateTotal() {
+        this.totalAmount = orderItems.stream()
+                .map(OrderItem::getSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }
