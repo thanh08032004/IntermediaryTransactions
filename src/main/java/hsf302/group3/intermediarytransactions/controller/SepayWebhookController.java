@@ -32,15 +32,10 @@ public class SepayWebhookController {
 
         BigDecimal amount = new BigDecimal(amountObj.toString());
 
-        // =========================
-        // 🔵 1. DEPOSIT FLOW
-        // =========================
         if (content != null && content.contains("DEPOSIT")) {
 
-            // 🔥 tách ID từ chuỗi kiểu: xxx-DEPOSIT4-xxx
             String depositPart = content.substring(content.indexOf("DEPOSIT") + 7);
 
-            // lấy số phía sau DEPOSIT
             String idStr = depositPart.split("[^0-9]")[0];
 
             Long id = Long.parseLong(idStr);
@@ -74,9 +69,6 @@ public class SepayWebhookController {
 
             return "OK DEPOSIT";
         }
-        // =========================
-        // 🟢 2. ORDER FLOW
-        // =========================
         if (content.startsWith("ORDER_")) {
 
             Order order = orderRepository.findByPaymentCode(content).orElse(null);

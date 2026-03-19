@@ -15,9 +15,6 @@ public class WalletService {
     private final WalletRepository walletRepository;
     private final TransactionRepository transactionRepository;
 
-    // =========================
-    // 💰 NẠP TIỀN
-    // =========================
     @Transactional
     public void deposit(Integer userId, BigDecimal amount, String description) {
 
@@ -26,15 +23,13 @@ public class WalletService {
 
         Wallet wallet = walletRepository.findByUser_Id(userId)
                 .orElseGet(() -> Wallet.builder()
-                        .user(user) // ✅ đúng
+                        .user(user)
                         .balance(BigDecimal.ZERO)
                         .build());
 
-        // ✅ cộng tiền đúng chuẩn
         wallet.setBalance(wallet.getBalance().add(amount));
         walletRepository.save(wallet);
 
-        // 🔥 lưu transaction
         Transaction tx = Transaction.builder()
                 .transactionCode("TXN_" + System.currentTimeMillis())
                 .userId(userId)
@@ -47,25 +42,18 @@ public class WalletService {
         transactionRepository.save(tx);
     }
 
-    // =========================
-    // 💸 THANH TOÁN
-    // =========================
     @Transactional
     public void pay(Integer userId, BigDecimal amount, Integer orderId) {
 
         Wallet wallet = walletRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy ví"));
 
-        // ✅ check tiền
         if (wallet.getBalance().compareTo(amount) < 0) {
             throw new RuntimeException("Không đủ tiền");
         }
-
-        // ✅ trừ tiền
         wallet.setBalance(wallet.getBalance().subtract(amount));
         walletRepository.save(wallet);
 
-        // 🔥 lưu transaction
         Transaction tx = Transaction.builder()
                 .transactionCode("TXN_" + System.currentTimeMillis())
                 .userId(userId)

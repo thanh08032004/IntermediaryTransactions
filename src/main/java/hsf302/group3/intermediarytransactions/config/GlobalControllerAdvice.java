@@ -19,7 +19,7 @@ public class GlobalControllerAdvice {
 
     private final NotificationService notificationService;
     private final UserRepository userRepository;
-    private final WalletRepository walletRepository; // 👈 THÊM
+    private final WalletRepository walletRepository;
 
     @ModelAttribute
     public void addGlobalData(Model model){
@@ -37,14 +37,12 @@ public class GlobalControllerAdvice {
             return;
         }
 
-        // 🔔 notifications
         model.addAttribute("notifications",
                 notificationService.getNotificationsByUserId(user.getId()));
 
         model.addAttribute("unreadCount",
                 notificationService.countUnread(user.getId()));
 
-        // 💰 balance (FIX CHÍNH Ở ĐÂY)
         BigDecimal balance = walletRepository.findByUser_Id(user.getId())
                 .map(Wallet::getBalance)
                 .orElse(BigDecimal.ZERO);

@@ -80,7 +80,6 @@ public class Product {
                     return img.getImageUrl();
                 }
             }
-            // nếu không có main thì lấy ảnh đầu
             if (!images.isEmpty()) {
                 return images.get(0).getImageUrl();
             }

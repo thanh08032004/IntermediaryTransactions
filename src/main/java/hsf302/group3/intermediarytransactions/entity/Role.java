@@ -10,8 +10,8 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"permissions"}) // Không cho phép toString quét qua permissions
-@EqualsAndHashCode(exclude = {"permissions"}) // Quan trọng nhất để tránh lỗi Concurrent khi Hibernate quản lý Set
+@ToString(exclude = {"permissions"})
+@EqualsAndHashCode(exclude = {"permissions"})
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +21,7 @@ public class Role {
     private String description;
     private Boolean active;
 
-    @ManyToMany(fetch = FetchType.EAGER) // Đã để EAGER là tốt, nhưng vẫn cần Exclude ở trên
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "role_permission",
             joinColumns = @JoinColumn(name = "role_id"),

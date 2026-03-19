@@ -9,9 +9,7 @@ import java.util.List;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Integer> {
 
-    // 🔍 lấy lịch sử theo user
     List<Transaction> findByUserId(Integer userId);
 
-    // 🔍 tìm theo mã giao dịch
     Transaction findByTransactionCode(String transactionCode);
 }
