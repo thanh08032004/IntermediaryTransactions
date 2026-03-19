@@ -56,13 +56,9 @@ public class Product {
 
     // Status Product
     @NotNull
-    @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private Status status;
-    public enum Status {
-        ACTIVE,
-        INACTIVE
-    }
+    @Enumerated(EnumType.STRING)
+    private ProductStatus status;
 
 
     @Column(name = "created_at", updatable = false)

@@ -36,4 +36,8 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
     private Wallet wallet;
+
+    public User(Integer id) {
+        this.id = id;
+    }
 }

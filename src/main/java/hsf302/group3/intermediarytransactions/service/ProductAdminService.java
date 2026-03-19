@@ -3,6 +3,7 @@ package hsf302.group3.intermediarytransactions.service;
 import hsf302.group3.intermediarytransactions.entity.Category;
 import hsf302.group3.intermediarytransactions.entity.Product;
 import hsf302.group3.intermediarytransactions.entity.ProductImage;
+import hsf302.group3.intermediarytransactions.entity.ProductStatus;
 import hsf302.group3.intermediarytransactions.repository.CategoryRepository;
 import hsf302.group3.intermediarytransactions.repository.ProductImageRepository;
 import hsf302.group3.intermediarytransactions.repository.ProductRepository;
@@ -70,7 +71,7 @@ public class ProductAdminService {
                                       Integer mainIndex) {
 
         if(product.getStatus() == null){
-            product.setStatus(Product.Status.ACTIVE);
+            product.setStatus(ProductStatus.ACTIVE);
         }
 
         if(product.getCategory() != null){
@@ -120,7 +121,11 @@ public class ProductAdminService {
 
     //xoa product
     public void deleteProduct(int id){
-        productRepository.deleteById(id);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        product.setStatus(ProductStatus.INACTIVE);
+        productRepository.save(product);
     }
 
     //list Category
@@ -132,10 +137,10 @@ public class ProductAdminService {
     public void toggleStatus(int id){
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
-        if(product.getStatus() == Product.Status.ACTIVE){
-            product.setStatus(Product.Status.INACTIVE);
+        if(product.getStatus() == ProductStatus.ACTIVE){
+            product.setStatus(ProductStatus.INACTIVE);
         } else {
-            product.setStatus(Product.Status.ACTIVE);
+            product.setStatus(ProductStatus.ACTIVE);
         }
         productRepository.save(product);
     }

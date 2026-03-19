@@ -58,7 +58,12 @@
             </a>
             <a th:href="@{/buyer-products}"
                th:classappend="${currentUri.startsWith('/buyer-products')} ? 'active'">
-                <i class="bi bi-bag"></i> Sản phẩm
+                <i class="bi bi-bag"></i> Đi Chợ
+            </a>
+
+            <a th:href="@{/seller-products}"
+               th:classappend="${currentUri.startsWith('/seller-products')} ? 'active'">
+                <i class="bi bi-bag"></i> Đi Buôn
             </a>
 
             <a th:href="@{/cart}"

@@ -3,6 +3,7 @@ package hsf302.group3.intermediarytransactions.service;
 import hsf302.group3.intermediarytransactions.entity.Permission;
 import hsf302.group3.intermediarytransactions.entity.User;
 import hsf302.group3.intermediarytransactions.repository.UserRepository;
+import hsf302.group3.intermediarytransactions.security.CustomUserDetails;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
@@ -21,28 +22,27 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    @Transactional(readOnly = true) //giu cho session mo
+    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
+        User u = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        // chuyen Set sang List ngay lap tuc de tranh tranh chap Concurrent
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().getName()));
 
-        // duyet qua permissions va gan vao authorities
-        if (user.getRole().getPermissions() != null) {
-            //  Hibernate nap du lieu bang cap truy cap truc tiep
-            for (Permission p : user.getRole().getPermissions()) {
+        // ROLE
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + u.getRole().getName()));
+
+        // PERMISSIONS
+        if (u.getRole().getPermissions() != null) {
+            for (Permission p : u.getRole().getPermissions()) {
                 authorities.add(new SimpleGrantedAuthority(p.getName()));
             }
         }
 
-        return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
-                user.getPassword(),
-                user.getActive(),
-                true, true, true,
+        return new CustomUserDetails(
+                u.getId(),
+                u.getUsername(),
+                u.getPassword(),
                 authorities
         );
     }

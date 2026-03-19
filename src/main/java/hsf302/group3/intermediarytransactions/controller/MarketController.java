@@ -2,6 +2,7 @@ package hsf302.group3.intermediarytransactions.controller;
 
 import hsf302.group3.intermediarytransactions.entity.Order;
 import hsf302.group3.intermediarytransactions.entity.Product;
+import hsf302.group3.intermediarytransactions.entity.ProductStatus;
 import hsf302.group3.intermediarytransactions.entity.User;
 import hsf302.group3.intermediarytransactions.repository.OrderRepository;
 import hsf302.group3.intermediarytransactions.repository.ProductRepository;
@@ -42,19 +43,19 @@ public class MarketController {
 
         if (minPrice != null && maxPrice != null) {
             productPage = productRepository.findByStatusAndPriceBetween(
-                    Product.Status.ACTIVE, minPrice, maxPrice, pageable);
+                    ProductStatus.ACTIVE, minPrice, maxPrice, pageable);
 
         } else if (minPrice != null) {
             productPage = productRepository.findByStatusAndPriceGreaterThanEqual(
-                    Product.Status.ACTIVE, minPrice, pageable);
+                    ProductStatus.ACTIVE, minPrice, pageable);
 
         } else if (maxPrice != null) {
             productPage = productRepository.findByStatusAndPriceLessThanEqual(
-                    Product.Status.ACTIVE, maxPrice, pageable);
+                    ProductStatus.ACTIVE, maxPrice, pageable);
 
         } else {
             productPage = productRepository.findByStatus(
-                    Product.Status.ACTIVE, pageable);
+                    ProductStatus.ACTIVE, pageable);
         }
 
         model.addAttribute("products", productPage.getContent());
