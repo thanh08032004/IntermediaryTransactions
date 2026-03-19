@@ -10,7 +10,7 @@
         <!-- COMMON -->
         <a th:href="@{/}"
            th:classappend="${currentUri == '/'} ? 'active'">
-            <i class="bi bi-house"></i> Trang chủ
+            <i class="bi bi-house"></i> Home
         </a>
 
         <!-- ADMIN -->
@@ -54,21 +54,21 @@
         <div sec:authorize="hasRole('USER')">
             <a th:href="@{/payment-request}"
                th:classappend="${currentUri.startsWith('/payment')} ? 'active'">
-                <i class="bi bi-cart"></i> Nạp tiền
+                <i class="bi bi-cart"></i> Deposit
             </a>
             <a th:href="@{/buyer-products}"
                th:classappend="${currentUri.startsWith('/buyer-products')} ? 'active'">
-                <i class="bi bi-bag"></i> Đi Chợ
+                <i class="bi bi-bag"></i> Market
             </a>
 
             <a th:href="@{/seller-products}"
                th:classappend="${currentUri.startsWith('/seller-products')} ? 'active'">
-                <i class="bi bi-bag"></i> Đi Buôn
+                <i class="bi bi-bag"></i> Business
             </a>
 
             <a th:href="@{/cart}"
                th:classappend="${currentUri.startsWith('/cart')} ? 'active'">
-                <i class="bi bi-cart"></i> Giỏ hàng
+                <i class="bi bi-cart"></i> Cart
             </a>
 
             <a data-bs-toggle="collapse"
@@ -79,7 +79,7 @@
                th:classappend="${currentUri.startsWith('/market')} ? 'active'">
 
     <span>
-        <i class="bi bi-arrow-left-right me-2"></i> Trung gian
+        <i class="bi bi-arrow-left-right me-2"></i> Intermediary
     </span>
                 <i class="bi bi-chevron-down"></i>
             </a>
@@ -97,13 +97,13 @@
                 <a th:href="@{/market/my-sell}"
                    class="d-block py-2"
                    th:classappend="${currentUri.startsWith('/market/my-sell')} ? 'active'">
-                    <i class="bi bi-cart me-2"></i> Đơn bán của tôi
+                    <i class="bi bi-cart me-2"></i> My sales order
                 </a>
 
                 <a th:href="@{/market/my-buy}"
                    class="d-block py-2"
                    th:classappend="${currentUri.startsWith('/market/my-buy')} ? 'active'">
-                    <i class="bi bi-cart me-2"></i> Đơn mua của tôi
+                    <i class="bi bi-cart me-2"></i> My order
                 </a>
 
             </div>

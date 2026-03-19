@@ -13,12 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/market")
+@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 @RequiredArgsConstructor
 public class MarketController {
 
@@ -50,6 +52,7 @@ public class MarketController {
 
     // MY BUY
     @GetMapping("/my-buy")
+    @PreAuthorize("hasAuthority('MANAGE_ORDER')")
     public String myBuy(
             @RequestParam(defaultValue = "ALL") String status,
             @RequestParam(defaultValue = "") String keyword,
@@ -79,6 +82,7 @@ public class MarketController {
 
     // MY SELL
     @GetMapping("/my-sell")
+    @PreAuthorize("hasAuthority('MANAGE_ORDER')")
     public String mySell(
             @RequestParam(defaultValue = "ALL") String status,
             @RequestParam(defaultValue = "") String keyword,
@@ -108,6 +112,7 @@ public class MarketController {
 
     // BUY
     @PostMapping("/buy/{id}")
+    @PreAuthorize("hasAuthority('MANAGE_ORDER')")
     public String buy(@PathVariable Integer id) {
 
         Integer userId = getUserId();
@@ -120,6 +125,7 @@ public class MarketController {
 
     // CANCEL
     @PostMapping("/cancel/{id}")
+    @PreAuthorize("hasAuthority('MANAGE_ORDER')")
     public String cancel(@PathVariable Integer id) {
         marketService.cancelOrder(id);
         return "redirect:/market/my-buy";
@@ -127,6 +133,7 @@ public class MarketController {
 
     // COMPLETE
     @PostMapping("/complete/{id}")
+    @PreAuthorize("hasAuthority('MANAGE_ORDER')")
     public String complete(@PathVariable Integer id) {
         marketService.completeOrder(id, getUserId());
         return "redirect:/market/my-sell";
@@ -134,6 +141,7 @@ public class MarketController {
 
     // DETAIL
     @GetMapping("/detail/{id}")
+    @PreAuthorize("hasAuthority('MANAGE_ORDER')")
     public String detail(@PathVariable Integer id, Model model) {
 
         Order order = marketService.getOrderDetail(id);
@@ -146,5 +154,5 @@ public class MarketController {
 
         return "order-detail";
     }
-    
+
 }

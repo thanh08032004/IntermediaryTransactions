@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Đơn bán của tôi</title>
+    <title>My sales order</title>
     <!-- Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -33,7 +33,7 @@
     <div class="content">
 <div class="container mt-4">
 
-    <h3 class="mb-3">💰 Đơn bán của tôi</h3>
+    <h3 class="mb-3">💰 My sales order</h3>
 
     <!-- 🔍 SEARCH -->
     <form method="get" th:action="@{/market/my-sell}">
@@ -46,13 +46,13 @@
 
             <input type="hidden" name="status" th:value="${currentStatus}">
 
-            <button class="btn btn-danger">Tìm</button>
+            <button class="btn btn-danger">Search</button>
         </div>
     </form>
 
     <!-- EMPTY -->
     <div th:if="${#lists.isEmpty(orders)}" class="alert alert-warning text-center">
-        Bạn chưa có đơn bán nào
+        You don't have any sales orders yet.
     </div>
 
     <!-- LIST -->
@@ -71,9 +71,9 @@
                 </div>
 
                 <div>
-                    <span class="badge bg-warning" th:if="${o.status == 'SELLING'}">Đang bán</span>
-                    <span class="badge bg-info" th:if="${o.status == 'PROCESSING'}">Đang xử lý</span>
-                    <span class="badge bg-success" th:if="${o.status == 'COMPLETED'}">Hoàn thành</span>
+                    <span class="badge bg-warning" th:if="${o.status == 'SELLING'}">Currently for sale</span>
+                    <span class="badge bg-info" th:if="${o.status == 'PROCESSING'}">Processing</span>
+                    <span class="badge bg-success" th:if="${o.status == 'COMPLETED'}">Complete</span>
                 </div>
 
             </div>
@@ -85,12 +85,12 @@
 
                 <div class="col-md-8">
 
-                    <p class="mb-1">👤 Người bán:
+                    <p class="mb-1">👤 Seller:
                         <b th:text="${o.seller?.username}"></b>
                     </p>
 
                     <!-- 🆕 DANH SÁCH SẢN PHẨM -->
-                    <p class="mb-1">📦 Sản phẩm:
+                    <p class="mb-1">📦 Product:
                         <span th:each="item, i : ${o.orderItems}">
 
             <span th:text="${item.product.name}"></span>
@@ -100,7 +100,7 @@
         </span>
                     </p>
 
-                    <p class="mb-0">💰 Tổng tiền:
+                    <p class="mb-0">💰 Total Amount:
                         <span class="text-danger fw-bold"
                               th:text="${#numbers.formatDecimal(o.totalAmount,0,'COMMA',0,'POINT')}">
         </span> đ
@@ -112,7 +112,7 @@
 
                     <a th:href="@{'/market/detail/' + ${o.id}}"
                        class="btn btn-outline-dark btn-sm">
-                        Chi tiết
+                        Detail
                     </a>
 
                     <form th:if="${o.status == 'PROCESSING'}"
@@ -121,7 +121,7 @@
                           class="mt-2">
 
                         <button class="btn btn-success btn-sm w-100">
-                            Xác nhận
+                            Confirm
                         </button>
                     </form>
 
