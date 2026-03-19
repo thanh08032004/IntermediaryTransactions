@@ -15,6 +15,12 @@
             <span class="badge bg-light text-primary" th:text="${'ID: ' + user.id}"></span>
         </div>
         <div class="card-body" sec:authorize="hasAuthority('MANAGE_USERS')">
+
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-octagon-fill me-2"></i>
+                <span th:text="${errorMessage}">Nội dung lỗi ở đây</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
             <form th:action="@{/admin/users/update}" th:object="${user}" method="post">
                 <input type="hidden" th:field="*{id}">
 
@@ -72,8 +78,13 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-bold">Phone Number</label>
-                            <input type="text" th:field="*{profile.phone}" class="form-control"
-                                   placeholder="Enter phone number">
+                            <input type="text" th:field="*{profile.phone}"
+                                   class="form-control"
+                                   th:classappend="${#fields.hasErrors('profile.phone')} ? 'is-invalid' : ''">
+
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('profile.phone')}"
+                                 th:errors="*{profile.phone}">
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -40,12 +40,12 @@ public class SecurityConfig {
                         .defaultSuccessUrl("/", true)
                         .permitAll()
                 )
-                .rememberMe(remember -> remember
-                        .key("uniqueAndSecretKey")
-                        .tokenValiditySeconds(86400 * 7) // ghi nho trong 7 ngay (86400s = 1 ngay)
-                        .userDetailsService(customUserDetailsService)
-                        .rememberMeParameter("remember-me")
-                )
+//                .rememberMe(remember -> remember
+//                        .key("uniqueAndSecretKey")
+//                        .tokenValiditySeconds(86400 * 7) // ghi nho trong 7 ngay (86400s = 1 ngay)
+//                        .userDetailsService(customUserDetailsService)
+//                        .rememberMeParameter("remember-me")
+//                )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")

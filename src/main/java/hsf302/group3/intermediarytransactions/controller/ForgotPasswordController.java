@@ -37,9 +37,7 @@ public class ForgotPasswordController {
 
     @PostMapping("/forgot-password")
     public String processForgotPassword(@RequestParam("email") String input, RedirectAttributes ra) {
-        // 1. Tìm User dựa trên cái bạn nhập vào ô input (có thể là username 'customer2')
-        Optional<User> userOpt = userRepository.findByUsername(input);
-
+        Optional<User> userOpt = userRepository.findByUsernameOrEmail(input);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
 
@@ -47,12 +45,11 @@ public class ForgotPasswordController {
             if (user.getProfile() != null && user.getProfile().getEmail() != null) {
                 String targetEmail = user.getProfile().getEmail();
 
-                // Logic tạo token...
                 String token = UUID.randomUUID().toString();
                 user.setResetToken(token);
                 userRepository.save(user);
 
-                // Tạo nội dung HTML cho Email
+               //noi dung html
                 String resetLink = "http://localhost:8080/reset-password?token=" + token;
 
                 String content = "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 10px; overflow: hidden;'>" +
@@ -72,15 +69,15 @@ public class ForgotPasswordController {
                         "    </div>" +
                         "</div>";
                 try {
-                    // 3. GỬI ĐẾN targetEmail (Email thật), KHÔNG GỬI ĐẾN input (username)
+                    // 3. gui den targetEmail (Email thật)
                     emailService.sendEmail(targetEmail, "Reset Password Request", content);
 
-                    ra.addFlashAttribute("message", "Link reset đã được gửi đến email đăng ký của bạn.");
+                    ra.addFlashAttribute("message", "The reset link has been sent to your registered email address");
                 } catch (MessagingException e) {
-                    ra.addFlashAttribute("error", "Lỗi gửi mail: " + e.getMessage());
+                    ra.addFlashAttribute("error", "Error sending email: " + e.getMessage());
                 }
             } else {
-                ra.addFlashAttribute("error", "Tài khoản này chưa có thông tin email trong Profile!");
+                ra.addFlashAttribute("error", "This account does not have email information in its profile!");
             }
         } else {
             ra.addFlashAttribute("error", "Tài khoản không tồn tại!");
@@ -108,7 +105,7 @@ public class ForgotPasswordController {
             user.setPassword(passwordEncoder.encode(newPassword));
             user.setResetToken(null);
             userRepository.save(user);
-            ra.addFlashAttribute("message", "Mật khẩu đã được cập nhật thành công!");
+            ra.addFlashAttribute("message", "Password has been successfully updated!");
         }
         return "redirect:/login";
     }

@@ -4,6 +4,7 @@ import hsf302.group3.intermediarytransactions.entity.Role;
 import hsf302.group3.intermediarytransactions.entity.User;
 import hsf302.group3.intermediarytransactions.entity.UserProfile;
 import hsf302.group3.intermediarytransactions.entity.Wallet;
+import hsf302.group3.intermediarytransactions.repository.UserProfileRepository;
 import hsf302.group3.intermediarytransactions.repository.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,9 +21,11 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    private final UserProfileRepository userProfileRepository;
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserProfileRepository userProfileRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.userProfileRepository = userProfileRepository;
     }
 
     public List<User> getAllUsers() {
@@ -51,31 +54,30 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUser(User updatedUser) {
-        User existingUser = getUserById(updatedUser.getId());
-        String currentUsername = getCurrentUsername();
+    public void updateUser(User userForm) {
+        User existingUser = userRepository.findById(userForm.getId())
+                .orElseThrow(() -> new RuntimeException("User does not exist"));
 
-        //chi active/inactive neu khong phai minh
-        if (!existingUser.getUsername().equals(currentUsername)) {
-            existingUser.setActive(updatedUser.getActive());
-            existingUser.setRole(updatedUser.getRole());
+        String newEmail = userForm.getProfile().getEmail();
+        boolean emailExists = userProfileRepository.existsByEmailAndUserIdNot(newEmail, userForm.getId());
+        String newPhone = userForm.getProfile().getPhone();
+        boolean phoneExists = userProfileRepository.existsByPhoneAndUserIdNot(newPhone, userForm.getId());
+
+        if (phoneExists) {
+            // Message này sẽ được 'e.getMessage()' ở Controller bắt được
+            throw new RuntimeException("This phone number has already been registered by another account!");
+        }
+        if (emailExists) {
+            throw new RuntimeException("This email address is already in use by another account!");
         }
 
+        existingUser.setActive(userForm.getActive());
+        existingUser.setRole(userForm.getRole());
 
-        if (updatedUser.getProfile() != null) {
-            if (existingUser.getProfile() == null) {
-                // chua profile
-                UserProfile newProfile = updatedUser.getProfile();
-                newProfile.setUser(existingUser);
-                newProfile.setUserId(existingUser.getId());
-                existingUser.setProfile(newProfile);
-            } else {
-                // co profile
-                existingUser.getProfile().setFullname(updatedUser.getProfile().getFullname());
-                existingUser.getProfile().setEmail(updatedUser.getProfile().getEmail());
-                existingUser.getProfile().setPhone(updatedUser.getProfile().getPhone());
-                // cac truong khac them sau
-            }
+        if (existingUser.getProfile() != null) {
+            existingUser.getProfile().setFullname(userForm.getProfile().getFullname());
+            existingUser.getProfile().setEmail(newEmail);
+            existingUser.getProfile().setPhone(userForm.getProfile().getPhone());
         }
 
         userRepository.save(existingUser);

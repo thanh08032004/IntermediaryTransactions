@@ -1,6 +1,8 @@
 package hsf302.group3.intermediarytransactions.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import java.time.LocalDate;
 
@@ -17,9 +19,11 @@ public class UserProfile {
     @Column(nullable = false, length = 100)
     private String fullname;
 
-    @Column(length = 20)
-    private String phone;
 
+    @NotBlank(message = "The phone number must not be left blank.")
+    @Pattern(regexp = "^(0|\\+84)(\\d{9})$", message = "Invalid phone number")
+    @Column(name = "phone", length = 20)
+    private String phone;
     @Column(unique = true, length = 100)
     private String email;
 
