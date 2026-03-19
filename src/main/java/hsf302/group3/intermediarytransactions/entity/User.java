@@ -20,6 +20,9 @@ public class User {
     @Column(nullable = false, length = 255)
     private String password;
 
+    @Column(nullable = true, length = 255)
+    private String resetToken;
+
     @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;

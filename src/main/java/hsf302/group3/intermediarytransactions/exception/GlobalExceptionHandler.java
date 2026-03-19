@@ -17,4 +17,5 @@ public class GlobalExceptionHandler {
     public String handleNotFound() {
         return "redirect:/404";
     }
+
 }
