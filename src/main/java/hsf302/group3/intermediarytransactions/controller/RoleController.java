@@ -1,5 +1,6 @@
 package hsf302.group3.intermediarytransactions.controller;
 
+import hsf302.group3.intermediarytransactions.entity.Permission;
 import hsf302.group3.intermediarytransactions.entity.Role;
 import hsf302.group3.intermediarytransactions.repository.PermissionRepository;
 import hsf302.group3.intermediarytransactions.repository.RoleRepository;
@@ -42,12 +43,24 @@ public class RoleController {
     @PostMapping("/update")
     public String updatePermissions(@RequestParam Integer roleId,
                                     @RequestParam(required = false) List<Integer> permissionIds) {
-        Role role = roleRepository.findById(roleId).orElseThrow();
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+
+        // ID chuẩn từ Script SQL của Thang
+        final Integer ADMIN_ROLE_ID = 1;
+        final Integer MANAGE_ROLES_PERM_ID = 7;
+
+        if (roleId.equals(ADMIN_ROLE_ID)) {
+            // Neu danh sach trong hoac khong co role ID 7 (MANAGE_ROLES)
+            if (permissionIds == null || !permissionIds.contains(MANAGE_ROLES_PERM_ID)) {
+                throw new RuntimeException("Warning: Do not remove the 'MANAGE_ROLES' Admin privileges to avoid losing system administrator rights!");
+            }
+        }
 
         if (permissionIds != null) {
             role.setPermissions(new HashSet<>(permissionRepository.findAllById(permissionIds)));
         } else {
-            role.setPermissions(new HashSet<>()); //go bo toan bo quyen
+            role.setPermissions(new HashSet<>());
         }
 
         roleRepository.save(role);

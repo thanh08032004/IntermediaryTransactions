@@ -4,6 +4,7 @@ import hsf302.group3.intermediarytransactions.entity.User;
 import hsf302.group3.intermediarytransactions.repository.RoleRepository;
 import hsf302.group3.intermediarytransactions.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,10 +25,21 @@ public class AdminController {
         this.roleRepository = roleRepository;
     }
 
+
     @GetMapping("/users")
     @PreAuthorize("hasAuthority('MANAGE_USERS')")
-    public String listUsers(Model model) {
-        model.addAttribute("users", userService.getAllUsers());
+    public String listUsers(Model model,
+                            @RequestParam(defaultValue = "0") int page,
+                            @RequestParam(defaultValue = "5") int size,
+                            @RequestParam(required = false) String keyword) {
+
+        Page<User> userPage = userService.getAllUsersPaged(page, size, keyword);
+
+        model.addAttribute("users", userPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", userPage.getTotalPages());
+        model.addAttribute("keyword", keyword);
+
         return "admin/user-list";
     }
 

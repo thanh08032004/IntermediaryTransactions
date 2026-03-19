@@ -35,10 +35,24 @@
                             <i class="bi bi-plus-circle"></i> Add New User
                         </a>
                     </div>
+
                 </div>
 
                 <div class="card-body">
-
+                    <div class="row mb-4">
+                        <div class="col-md-5">
+                            <form th:action="@{/admin/users}" method="get" class="input-group shadow-sm">
+                                <input type="text" name="keyword" th:value="${keyword}"
+                                       class="form-control" placeholder="Search by name, username, email...">
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                                <a th:href="@{/admin/users}" class="btn btn-outline-secondary" title="Reset">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </a>
+                            </form>
+                        </div>
+                    </div>
                     <!-- ALERTS -->
                     <div th:if="${param.success == 'updated'}"
                          class="alert alert-success alert-dismissible fade show">
@@ -154,6 +168,28 @@
                             </tbody>
 
                         </table>
+                        <div th:if="${totalPages > 0}" class="d-flex justify-content-between align-items-center mt-3">
+                            <div>
+                                Showing page <span th:text="${currentPage + 1}"></span> of <span th:text="${totalPages}"></span>
+                            </div>
+                            <nav>
+                                <ul class="pagination mb-0">
+                                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                        <a class="page-link" th:href="@{/admin/users(page=${currentPage - 1})}">Previous</a>
+                                    </li>
+
+                                    <li class="page-item" th:each="pageNumber : ${#numbers.sequence(0, totalPages - 1)}"
+                                        th:classappend="${pageNumber == currentPage} ? 'active'">
+                                        <a class="page-link" th:href="@{/admin/users(page=${pageNumber})}"
+                                           th:text="${pageNumber + 1}"></a>
+                                    </li>
+
+                                    <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                                        <a class="page-link" th:href="@{/admin/users(page=${currentPage + 1})}">Next</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
                     </div>
 
                 </div>

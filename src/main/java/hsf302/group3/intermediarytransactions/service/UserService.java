@@ -6,6 +6,10 @@ import hsf302.group3.intermediarytransactions.entity.UserProfile;
 import hsf302.group3.intermediarytransactions.entity.Wallet;
 import hsf302.group3.intermediarytransactions.repository.UserProfileRepository;
 import hsf302.group3.intermediarytransactions.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +30,14 @@ public class UserService {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userProfileRepository = userProfileRepository;
+    }
+
+    public Page<User> getAllUsersPaged(int page, int size, String keyword) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        if (keyword != null && !keyword.isEmpty()) {
+            return userRepository.searchByName(keyword, pageable);
+        }
+        return userRepository.findAll(pageable);
     }
 
     public List<User> getAllUsers() {

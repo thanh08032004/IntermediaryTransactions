@@ -36,16 +36,23 @@
                                                    th:value="${perm.id}"
                                                    th:id="${'perm' + perm.id}"
                                                    th:checked="${role.permissions.contains(perm)}"
+                                                   th:disabled="${role.id == 1 && perm.id == 7}"
                                                    style="width: 2.5rem; height: 1.25rem; cursor: pointer;">
+
+                                            <input type="hidden" th:if="${role.id == 1 && perm.id == 7}"
+                                                   name="permissionIds" th:value="${perm.id}">
+
                                             <label class="form-check-label ms-3" th:for="${'perm' + perm.id}" style="cursor: pointer;">
-                                                <div class="fw-bold text-dark" th:text="${perm.name}">PERMISSION_NAME</div>
-                                                <small class="text-muted" th:text="${perm.description}">Description here...</small>
+                                                <div class="fw-bold text-dark">
+                                                    <span th:text="${perm.name}"></span>
+                                                    <span th:if="${role.id == 1 && perm.id == 7}" class="badge bg-danger ms-2" style="font-size: 0.6rem;">REQUIRED</span>
+                                                </div>
+                                                <small class="text-muted" th:text="${perm.description}"></small>
                                             </label>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
                     </div>
 
                     <div class="card-footer bg-white p-3 d-flex justify-content-end gap-2">
