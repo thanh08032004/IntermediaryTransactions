@@ -17,9 +17,6 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     Optional<Order> findByPaymentCode(String paymentCode);
 
-    Order findByOrderCode(String orderCode);
-
-    List<Order> findByBuyer(User buyer);
 
     // ================= MARKET =================
     Page<Order> findByStatus(OrderStatus status, Pageable pageable);

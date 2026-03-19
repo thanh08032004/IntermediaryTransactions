@@ -84,15 +84,28 @@
             <div class="row align-items-center">
 
                 <div class="col-md-8">
-                    <p class="mb-1">👤 Người mua:
-                        <b th:text="${o.buyer?.username}"></b>
+
+                    <p class="mb-1">👤 Người bán:
+                        <b th:text="${o.seller?.username}"></b>
+                    </p>
+
+                    <!-- 🆕 DANH SÁCH SẢN PHẨM -->
+                    <p class="mb-1">📦 Sản phẩm:
+                        <span th:each="item, i : ${o.orderItems}">
+
+            <span th:text="${item.product.name}"></span>
+
+                            <!-- dấu phẩy giữa các sản phẩm -->
+            <span th:if="${!i.last}">, </span>
+        </span>
                     </p>
 
                     <p class="mb-0">💰 Tổng tiền:
                         <span class="text-danger fw-bold"
                               th:text="${#numbers.formatDecimal(o.totalAmount,0,'COMMA',0,'POINT')}">
-                    </span> đ
+        </span> đ
                     </p>
+
                 </div>
 
                 <div class="col-md-4 text-end">
