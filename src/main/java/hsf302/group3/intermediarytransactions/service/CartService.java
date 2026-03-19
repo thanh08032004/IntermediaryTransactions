@@ -9,6 +9,7 @@ import hsf302.group3.intermediarytransactions.repository.CartRepository;
 import hsf302.group3.intermediarytransactions.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
@@ -18,72 +19,60 @@ public class CartService {
 
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
-    private final ProductRepository productRepository; // để lấy Product theo id
+    private final ProductRepository productRepository;
 
-    // Lấy giỏ hàng của user, nếu chưa có thì tạo mới
+    // Lấy giỏ hàng user, tạo mới nếu chưa có
     public Cart getCartByUser(User user) {
-        return cartRepository.findByUser(user).orElseGet(() -> {
-            Cart cart = new Cart();
-            cart.setUser(user);
-            return cartRepository.save(cart);
-        });
+        return cartRepository.findByUser(user)
+                .orElseGet(() -> {
+                    Cart cart = new Cart();
+                    cart.setUser(user);
+                    return cartRepository.save(cart);
+                });
     }
-
     // Thêm sản phẩm vào giỏ
-    public Cart addToCart(User user, Integer productId, int quantity) {
+    @Transactional
+    public void addToCart(User user, Integer productId, Integer quantity) {
         Cart cart = getCartByUser(user);
+
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
+        // Kiểm tra nếu sản phẩm đã có trong giỏ
         CartItem cartItem = cartItemRepository.findByCartAndProduct(cart, product)
-                .orElse(new CartItem());
+                .orElseGet(() -> {
+                    CartItem item = new CartItem();
+                    item.setCart(cart);
+                    item.setProduct(product);
+                    item.setPrice(product.getPrice());
+                    cart.getItems().add(item);
+                    return item;
+                });
 
-        cartItem.setCart(cart);
-        cartItem.setProduct(product);
-        cartItem.setPrice(product.getPrice());
-
-        if (cartItem.getId() != null) {
-            cartItem.setQuantity(cartItem.getQuantity() + quantity);
-        } else {
-            cartItem.setQuantity(quantity);
-            cart.getItems().add(cartItem);
-        }
+        cartItem.setQuantity(cartItem.getQuantity() != null ? cartItem.getQuantity() + quantity : quantity);
 
         cartRepository.save(cart);
-        return cart;
     }
 
-    // Xóa sản phẩm khỏi giỏ
-    public void removeFromCart(User user, Integer productId) {
+    @Transactional
+    public void updateQuantity(User user, Integer productId, Integer quantity) {
         Cart cart = getCartByUser(user);
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
-
-        cartItemRepository.findByCartAndProduct(cart, product).ifPresent(cartItem -> {
-            cart.getItems().remove(cartItem);
-            cartItemRepository.delete(cartItem);
+        Product product = productRepository.findById(productId).orElseThrow();
+        cartItemRepository.findByCartAndProduct(cart, product).ifPresent(item -> {
+            item.setQuantity(quantity);
+            cartRepository.save(cart);
         });
     }
 
-    // Cập nhật số lượng
-    public void updateQuantity(User user, Integer productId, int quantity) {
+    @Transactional
+    public void removeItem(User user, Integer productId) {
         Cart cart = getCartByUser(user);
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
-
-        CartItem cartItem = cartItemRepository.findByCartAndProduct(cart, product)
-                .orElseThrow(() -> new RuntimeException("Item not in cart"));
-
-        if (quantity <= 0) {
-            removeFromCart(user, productId);
-        } else {
-            cartItem.setQuantity(quantity);
-            cartItemRepository.save(cartItem);
-        }
+        Product product = productRepository.findById(productId).orElseThrow();
+        cart.getItems().removeIf(i -> i.getProduct().getId().equals(productId));
+        cartRepository.save(cart);
     }
-
-    // Tính tổng tiền giỏ hàng
-    public BigDecimal getTotal(Cart cart) {
+    public BigDecimal getTotal(User user) {
+        Cart cart = getCartByUser(user);
         return cart.getItems().stream()
                 .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);

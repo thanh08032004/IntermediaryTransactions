@@ -39,9 +39,8 @@ public class AdminProductController {
         model.addAttribute("totalPages", productPage.getTotalPages());
         model.addAttribute("keyword", keyword);
 
-        return "admin/product-list";
+        return "market";
     }
-
     // update product
     @PostMapping("/update")
     public String updateProduct(

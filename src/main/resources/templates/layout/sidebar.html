@@ -50,66 +50,91 @@
 
         </div>
 
-        <!-- USER -->
         <div sec:authorize="hasRole('USER')">
+
+            <!-- Deposit -->
             <a th:href="@{/payment-request}"
                th:classappend="${currentUri.startsWith('/payment')} ? 'active'">
                 <i class="bi bi-cart"></i> Deposit
             </a>
-            <a th:href="@{/buyer-products}"
-               th:classappend="${currentUri.startsWith('/buyer-products')} ? 'active'">
-                <i class="bi bi-bag"></i> Market
-            </a>
 
-            <a th:href="@{/seller-products}"
-               th:classappend="${currentUri.startsWith('/seller-products')} ? 'active'">
-                <i class="bi bi-bag"></i> Business
-            </a>
-
-            <a th:href="@{/cart}"
-               th:classappend="${currentUri.startsWith('/cart')} ? 'active'">
-                <i class="bi bi-cart"></i> Cart
-            </a>
-
-            <a data-bs-toggle="collapse"
+            <a class="d-flex justify-content-between align-items-center"
+               data-bs-toggle="collapse"
                href="#marketMenu"
                role="button"
-               aria-expanded="true"
-               class="d-flex justify-content-between align-items-center"
-               th:classappend="${currentUri.startsWith('/market')} ? 'active'">
-
-    <span>
-        <i class="bi bi-arrow-left-right me-2"></i> Intermediary
-    </span>
+               aria-expanded="false"
+               aria-controls="marketMenu"
+               th:classappend="${currentUri.startsWith('/buyer-products') or currentUri.startsWith('/cart') or currentUri.startsWith('/market/my-sell') or currentUri.startsWith('/market/my-buy')} ? 'active'">
+                <span><i class="bi bi-bag me-2"></i> Market</span>
                 <i class="bi bi-chevron-down"></i>
             </a>
 
-            <div class="collapse show ps-4"
+            <div class="collapse ps-4"
                  id="marketMenu"
-                 th:classappend="${currentUri.startsWith('/market')} ? 'show'">
+                 th:classappend="${currentUri.startsWith('/buyer-products') or currentUri.startsWith('/cart') or currentUri.startsWith('/market/my-sell') or currentUri.startsWith('/market/my-buy')} ? 'show'">
 
-<!--                <a th:href="@{/market}"-->
-<!--                   class="d-block py-2"-->
-<!--                   th:classappend="${currentUri == '/market'} ? 'active'">-->
-<!--                    <i class="bi bi-cart me-2"></i> Chợ công khai-->
-<!--                </a>-->
+                <!-- Default Market page (List product) -->
+                <a th:href="@{/buyer-products}" class="d-block py-2"
+                   th:classappend="${currentUri.startsWith('/buyer-products')} ? 'active'">
+                    <i class="bi bi-list-ul me-2"></i> Product List
+                </a>
 
-                <a th:href="@{/market/my-sell}"
-                   class="d-block py-2"
+                <!-- Cart -->
+                <a th:href="@{/cart}" class="d-block py-2"
+                   th:classappend="${currentUri.startsWith('/cart')} ? 'active'">
+                    <i class="bi bi-cart me-2"></i> Cart
+                </a>
+
+                <!-- Seller Intermediary Orders -->
+                <a th:href="@{/market/my-sell}" class="d-block py-2"
                    th:classappend="${currentUri.startsWith('/market/my-sell')} ? 'active'">
-                    <i class="bi bi-cart me-2"></i> My sales order
+                    <i class="bi bi-cart me-2"></i> Seller Intermediary Orders
                 </a>
 
-                <a th:href="@{/market/my-buy}"
-                   class="d-block py-2"
+                <!-- Buyer Intermediary Orders -->
+                <a th:href="@{/market/my-buy}" class="d-block py-2"
                    th:classappend="${currentUri.startsWith('/market/my-buy')} ? 'active'">
-                    <i class="bi bi-cart me-2"></i> My order
+                    <i class="bi bi-cart me-2"></i> Buyer Intermediary Orders
                 </a>
-
             </div>
+        <!-- Business -->
+        <a th:href="@{/seller-products}"
+           th:classappend="${currentUri.startsWith('/seller-products')} ? 'active'">
+            <i class="bi bi-bag"></i> Business
+        </a>
+
+        <!-- Custom Menu (giữ nguyên để tự sửa) -->
+        <a data-bs-toggle="collapse"
+           href="#customMenu"
+           role="button"
+           aria-expanded="false"
+           class="d-flex justify-content-between align-items-center"
+           th:classappend="${currentUri.startsWith('/custom')} ? 'active'">
+
+        <span>
+            <i class="bi bi-menu-button-wide me-2"></i> Custom Menu
+        </span>
+            <i class="bi bi-chevron-down"></i>
+        </a>
+
+        <div class="collapse ps-4"
+             id="customMenu"
+             th:classappend="${currentUri.startsWith('/custom')} ? 'show'">
+
+            <a th:href="@{/custom/link1}"
+               class="d-block py-2"
+               th:classappend="${currentUri.startsWith('/custom/link1')} ? 'active'">
+                <i class="bi bi-link-45deg me-2"></i> Link 1
+            </a>
+
+            <a th:href="@{/custom/link2}"
+               class="d-block py-2"
+               th:classappend="${currentUri.startsWith('/custom/link2')} ? 'active'">
+                <i class="bi bi-link-45deg me-2"></i> Link 2
+            </a>
 
         </div>
 
     </div>
 
-</div>
+    </div>

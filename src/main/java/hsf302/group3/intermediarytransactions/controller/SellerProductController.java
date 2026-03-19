@@ -30,7 +30,7 @@ public class SellerProductController {
                        @RequestParam(defaultValue = "0") Integer page,
                        Authentication authentication, Model model) {
         CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
-        Integer sellerId = user.getId();
+        Integer sellerId = user.getUser().getId();
 
         Page<Product> productPage = productService.getSellerProducts(
                 sellerId, keyword, PageRequest.of(page, 5));
@@ -55,7 +55,7 @@ public class SellerProductController {
     @PostMapping("/add")
     public String create(Product product, Authentication authentication) {
         CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
-        Integer sellerId = user.getId();
+        Integer sellerId = user.getUser().getId();
         productService.create(product, sellerId);
 
         return "redirect:/seller-products";
@@ -65,7 +65,7 @@ public class SellerProductController {
     @GetMapping("/edit/{id}")
     public String editForm(@PathVariable Integer id, Authentication authentication, Model model) {
         CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
-        Integer sellerId = user.getId();
+        Integer sellerId = user.getUser().getId();
         Product p = productService.getById(id, sellerId);
 
         model.addAttribute("product", p);
@@ -78,7 +78,7 @@ public class SellerProductController {
     @PostMapping("/edit/{id}")
     public String update(@PathVariable Integer id, Product product, Authentication authentication) {
         CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
-        Integer sellerId = user.getId();
+        Integer sellerId = user.getUser().getId();
         productService.update(id, product, sellerId);
 
         return "redirect:/seller-products";
@@ -88,7 +88,7 @@ public class SellerProductController {
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Integer id, Authentication authentication) {
         CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
-        Integer sellerId = user.getId();
+        Integer sellerId = user.getUser().getId();
         productService.delete(id, sellerId);
 
         return "redirect:/seller-products";

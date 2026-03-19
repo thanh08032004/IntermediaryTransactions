@@ -5,112 +5,195 @@
     <title>Product Detail</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/style.css}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        /* Product Card */
+        .product-card {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 0 12px rgba(0,0,0,0.08);
+            max-width: 1000px;
+            width: 100%;
+            margin: 30px auto;
+        }
+
+        /* Main Image */
+        .product-image-main {
+            width: 100%;
+            max-width: 400px;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            display: block;
+            margin: 0 auto 20px auto;
+        }
+
+        /* Thumbnail Images */
+        .product-images-thumb img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+
+        /* Quantity + Buttons */
+        .product-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .quantity-input {
+            width: 70px;
+            text-align: center;
+        }
+
+        /* Info Table */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .info-table th {
+            width: 35%;
+            background-color: #f1f3f5;
+            padding: 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .info-table td {
+            width: 65%;
+            padding: 12px;
+            vertical-align: top;
+        }
+
+        /* Share button spacing */
+        .btn-share {
+            margin-left: 5px;
+        }
+
+        /* Responsive: thumbnails row */
+        @media (max-width: 576px) {
+            .product-images-thumb .col-3 {
+                flex: 0 0 25%;
+                max-width: 25%;
+            }
+        }
+    </style>
 </head>
+<body class="bg-light">
 
+<div th:replace="~{layout/header :: header('Product Detail')}"></div>
 
-<!-- HEADER -->
-<div th:replace="~{layout/header :: header('Home Page')}"></div>
-
-<!-- LAYOUT -->
-<div class="layout">
-    <!-- SIDEBAR -->
-    <div th:replace="~{layout/sidebar :: sidebar}"></div>
-
-<!-- LAYOUT -->
-<div class="layout">
-
-    <!-- SIDEBAR -->
-    <div th:replace="~{layout/sidebar :: sidebar}"></div>
-
-    <!-- CONTENT -->
-    <div class="content">
-    <div class="container mt-4">
-
-        <!-- BACK -->
-        <a th:href="@{/buyer-products}" class="btn btn-outline-secondary mb-3">
-            ← Back to list
-        </a>
-
-        <div class="row">
-
-            <!-- IMAGE -->
-            <div class="col-md-5">
-                <div class="card shadow-sm">
-                    <img th:src="@{${product.mainImageUrl}}"
-                         class="img-fluid rounded"
-                         style="height:350px; object-fit:cover;">
-                </div>
-            </div>
-
-            <!-- INFO -->
-            <div class="col-md-7">
-
-                <h3 th:text="${product.name}"></h3>
-
-                <p class="text-muted"
-                   th:text="${product.category != null ? product.category.name : 'N/A'}"></p>
-
-                <!-- PRICE -->
-                <h4 class="text-danger mb-3"
-                    th:text="${#numbers.formatDecimal(product.price,0,'COMMA',0,'POINT')} + ' $'">
-                </h4>
-
-                <!-- QUANTITY -->
-                <p class="mt-3">
-                    <strong>Stock:</strong>
-                    <span th:text="${product.quantity}"></span>
-                </p>
-
-                <!-- DESCRIPTION -->
-                <div class="mt-3">
-                    <h5>Description</h5>
-                    <p th:text="${product.description}"></p>
-                </div>
-
-            <!-- ACTION -->
-            <div class="mt-4">
-
-                <form th:action="@{/cart/add}" method="post" class="d-inline">
-                    <input type="hidden" name="productId" th:value="${product.id}" />
-                    <input type="hidden" name="quantity" value="1" />
-                    <button type="submit" class="btn btn-success me-2">
-                        <i class="bi bi-cart-plus"></i> Add to Cart
-                    </button>
-                </form>
-
-                <button class="btn btn-outline-danger">
-                    <i class="bi bi-heart"></i> Wishlist
-                </button>
-
-            </div>
-
-            </div>
-
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- SIDEBAR -->
+        <div class="col-md-3">
+            <div th:replace="~{layout/sidebar :: sidebar}"></div>
         </div>
 
-        <!-- MORE IMAGES -->
-        <div class="mt-5" th:if="${product.images != null}">
-            <h5>More Images</h5>
+        <!-- MAIN CONTENT -->
+        <div class="col-md-9">
+            <div class="product-card">
+                <!-- Main Image -->
+                <img th:src="@{${product.mainImageUrl}}" alt="Product Image" class="product-image-main">
 
-            <div class="row">
-                <div class="col-md-2 mb-3"
-                     th:each="img : ${product.images}">
+                <!-- Thumbnail Images -->
+                <div class="row product-images-thumb g-2 justify-content-center" th:if="${product.images != null}">
+                    <div class="col-3 col-sm-2" th:each="img : ${product.images}">
+                        <img th:src="@{${img.imageUrl}}" alt="Thumbnail" onclick="changeMainImage(this)">
+                    </div>
+                </div>
 
-                    <img th:src="@{${img.imageUrl}}"
-                         class="img-fluid rounded border"
-                         style="height:100px; object-fit:cover;">
+                <!-- Product Info Table -->
+                <table class="table table-bordered info-table">
+                    <tbody>
+                    <tr><th>Product Name</th><td th:text="${product.name}"></td></tr>
+                    <tr><th>Category</th><td th:text="${product.category != null ? product.category.name : 'N/A'}"></td></tr>
+                    <tr><th>Supplier</th><td th:text="${product.supplier != null ? product.supplier.username : 'N/A'}"></td></tr>
+                    <tr><th>Price</th><td class="text-danger fw-bold" th:text="${#numbers.formatDecimal(product.price,0,'COMMA',0,'POINT')} + ' $'"></td></tr>
+                    <tr><th>Quantity</th><td th:text="${product.quantity}"></td></tr>
+                    <tr><th>Status</th><td th:text="${product.status}"></td></tr>
+                    <tr><th>Created At</th><td th:text="${#temporals.format(product.createdAt, 'dd/MM/yyyy HH:mm')}"></td></tr>
+                    <tr><th>Description</th><td th:text="${product.description}"></td></tr>
+                    </tbody>
+                </table>
+
+                <!-- Actions -->
+                <div class="product-actions">
+                    <input type="number" id="quantity" name="quantity" value="1" min="1" th:attr="max=${product.quantity}" class="form-control quantity-input">
+                    <form th:action="@{/cart/add}" method="post" class="d-inline">
+                        <input type="hidden" name="productId" th:value="${product.id}" />
+                        <input type="hidden" id="hiddenQuantity" name="quantity" value="1" />
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-cart-plus"></i> Add to Cart
+                        </button>
+                    </form>
+                    <button type="button" class="btn btn-primary btn-share" data-bs-toggle="modal" data-bs-target="#shareModal">
+                        <i class="bi bi-share"></i> Share
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-        </div>
 </div>
+<!-- Share Modal -->
+<div class="modal fade" id="shareModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Share Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="shareLink" th:value="@{'/buyer-products/view/' + ${product.id}}" readonly>
+                    <button class="btn btn-outline-secondary" type="button" id="copyButton">Copy</button>
+                </div>
+                <small id="copySuccess" class="text-success mt-2" style="display:none;">Copied!</small>
+            </div>
+        </div>
+    </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const quantityInput = document.getElementById('quantity');
+    const hiddenQuantity = document.getElementById('hiddenQuantity');
+    quantityInput.addEventListener('input', () => hiddenQuantity.value = quantityInput.value);
+
+    const copyBtn = document.getElementById("copyButton");
+    const shareLink = document.getElementById("shareLink");
+    const copySuccess = document.getElementById("copySuccess");
+    copyBtn.addEventListener("click", function () {
+        shareLink.select();
+        navigator.clipboard.writeText(shareLink.value).then(() => {
+            copySuccess.style.display = 'block';
+            setTimeout(() => copySuccess.style.display = 'none', 2000);
+        });
+    });
+
+    function changeMainImage(img) {
+        document.querySelector('.product-image-main').src = img.src;
+    }
+</script>
 
 </body>
 </html>

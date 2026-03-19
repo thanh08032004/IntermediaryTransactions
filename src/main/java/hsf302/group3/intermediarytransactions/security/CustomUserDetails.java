@@ -1,48 +1,58 @@
 package hsf302.group3.intermediarytransactions.security;
 
+import hsf302.group3.intermediarytransactions.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import java.util.Collection;
 
 public class CustomUserDetails implements UserDetails {
-    private Integer id;
-    private String username;
-    private String password;
-    private boolean active;
-    private Collection<? extends GrantedAuthority> authorities;
 
-    public CustomUserDetails(Integer id, String username, String password,
-                             boolean active,
-                             Collection<? extends GrantedAuthority> authorities) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.active = active;
+    private final User user; // entity User
+    private final Collection<? extends GrantedAuthority> authorities;
+
+    public CustomUserDetails(User user, Collection<? extends GrantedAuthority> authorities) {
+        this.user = user;
         this.authorities = authorities;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
+    }
+
+    @Override
+    public String getPassword() {
+        return user.getPassword();
+    }
+
+    @Override
+    public String getUsername() {
+        return user.getUsername();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true; // nếu bạn có trường kiểm tra hết hạn thì đổi ở đây
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true; // nếu bạn có trường khóa tài khoản thì đổi ở đây
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true; // nếu bạn có quản lý thời hạn mật khẩu thì đổi ở đây
     }
 
     @Override
     public boolean isEnabled() {
-        return this.active;
+        // chuyển Boolean sang primitive boolean an toàn
+        return user.getActive() != null && user.getActive();
     }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() { return authorities; }
-
-    @Override
-    public String getPassword() { return password; }
-
-    @Override
-    public String getUsername() { return username; }
-
-    @Override
-    public boolean isAccountNonExpired() { return true; }
-
-    @Override
-    public boolean isAccountNonLocked() { return true; }
-
-    @Override
-    public boolean isCredentialsNonExpired() { return true; }
-
-    public Integer getId() { return id; }
 }

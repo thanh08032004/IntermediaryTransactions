@@ -39,12 +39,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             }
         }
 
-        return new CustomUserDetails(
-                u.getId(),
-                u.getUsername(),
-                u.getPassword(),
-                u.getActive(),
-                authorities
-        );
+        // Trả về CustomUserDetails mới
+        return new CustomUserDetails(u, authorities);
     }
 }

@@ -155,9 +155,11 @@
                             <hr>
 
                             <div class="d-grid">
-                                <a href="/checkout" class="btn btn-success btn-lg rounded-3">
-                                    <i class="bi bi-bag-check"></i> Checkout
-                                </a>
+                                <form th:action="@{/checkout/confirm}" method="post">
+                                    <button class="btn btn-success btn-lg rounded-3">
+                                        <i class="bi bi-bag-check"></i> Checkout
+                                    </button>
+                                </form>
                             </div>
 
                         </div>

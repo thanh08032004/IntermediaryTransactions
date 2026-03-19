@@ -42,14 +42,13 @@
                                 Please review your order before confirming.
                             </p>
 
-                            <form th:action="@{/checkout}" method="post">
-
+                            <!-- FORM CONFIRM -->
+                            <form th:action="@{/checkout/confirm}" method="post">
                                 <div class="d-grid mt-4">
                                     <button class="btn btn-success btn-lg rounded-3">
                                         <i class="bi bi-bag-check"></i> Confirm Order
                                     </button>
                                 </div>
-
                             </form>
 
                         </div>
@@ -57,7 +56,7 @@
 
                 </div>
 
-                <!-- RIGHT: ORDER -->
+                <!-- RIGHT: ORDER TABLE -->
                 <div class="col-lg-8">
 
                     <div class="card shadow-sm border-0 rounded-3">
@@ -70,19 +69,16 @@
 
                         <div class="card-body">
 
-                            <!-- EMPTY -->
-                            <div th:if="${#lists.isEmpty(cart.items)}"
+                            <!-- EMPTY CHECK -->
+                            <div th:if="${(cartItems == null or #lists.isEmpty(cartItems)) and (cart == null or #lists.isEmpty(cart.items))}"
                                  class="text-center py-5">
                                 <i class="bi bi-cart-x fs-1 text-muted"></i>
                                 <p class="mt-3 text-muted">Your cart is empty</p>
-                                <a href="/products" class="btn btn-outline-primary btn-sm">
-                                    Continue Shopping
-                                </a>
+                                <a href="/products" class="btn btn-outline-primary btn-sm">Continue Shopping</a>
                             </div>
 
                             <!-- HAS ITEMS -->
-                            <div th:if="${!#lists.isEmpty(cart.items)}">
-
+                            <div th:if="${(cartItems != null and !#lists.isEmpty(cartItems)) or (cart != null and !#lists.isEmpty(cart.items))}">
                                 <div class="table-responsive">
                                     <table class="table align-middle">
                                         <thead class="table-light">
@@ -95,24 +91,20 @@
                                         </thead>
 
                                         <tbody>
-                                        <tr th:each="item : ${cart.items}">
+                                        <tr th:each="item : ${cartItems != null ? cartItems : cart.items}">
                                             <td>
                                                 <div class="d-flex align-items-center gap-3">
                                                     <img th:src="${item.product.mainImageUrl}"
                                                          style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
                                                     <div>
-                                                        <div class="fw-semibold"
-                                                             th:text="${item.product.name}"></div>
+                                                        <div class="fw-semibold" th:text="${item.product.name}"></div>
                                                     </div>
                                                 </div>
                                             </td>
 
-                                            <td class="text-center"
-                                                th:text="${item.quantity}"></td>
-
+                                            <td class="text-center" th:text="${item.quantity}"></td>
                                             <td class="text-end"
                                                 th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
-
                                             <td class="text-end fw-semibold text-success"
                                                 th:text="${#numbers.formatDecimal(item.price.multiply(item.quantity), 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
                                         </tr>
@@ -126,12 +118,11 @@
                                         <div class="d-flex justify-content-between mb-2">
                                             <span>Total</span>
                                             <strong class="text-success"
-                                                    th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                                                    th:text="${total != null ? #numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}">
                                             </strong>
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
 
                         </div>
