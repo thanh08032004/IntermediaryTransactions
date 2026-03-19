@@ -13,58 +13,31 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     Optional<Order> findByPaymentCode(String paymentCode);
 
     // =========================
-    // MARKET (ĐÃ CÓ)
+    // BUY
     // =========================
-    Page<Order> findByStatus(String status, Pageable pageable);
+    Page<Order> findByBuyer_Id(Integer buyerId, Pageable pageable);
 
-    Page<Order> findByStatusAndTotalAmountBetween(
-            String status, Double min, Double max, Pageable pageable);
+    Page<Order> findByBuyer_IdAndStatus(
+            Integer buyerId, Order.Status status, Pageable pageable);
 
-    Page<Order> findByStatusAndTotalAmountGreaterThanEqual(
-            String status, Double min, Pageable pageable);
-
-    Page<Order> findByStatusAndTotalAmountLessThanEqual(
-            String status, Double max, Pageable pageable);
-
-    List<Order> findByStatus(String status);
-
-    // =========================
-    // BUY (CŨ)
-    // =========================
-    List<Order> findByBuyerId(Integer buyerId);
-
-    // =========================
-    // SELL (CŨ)
-    // =========================
-    List<Order> findByUserId(Integer userId);
-
-
-    // =========================
-    // BUY (SEARCH + PAGINATION)
-    // =========================
-    Page<Order> findByBuyerId(Integer buyerId, Pageable pageable);
-
-    Page<Order> findByBuyerIdAndStatus(
-            Integer buyerId, String status, Pageable pageable);
-
-    Page<Order> findByBuyerIdAndOrderCodeContainingIgnoreCase(
+    Page<Order> findByBuyer_IdAndOrderCodeContainingIgnoreCase(
             Integer buyerId, String keyword, Pageable pageable);
 
-    Page<Order> findByBuyerIdAndStatusAndOrderCodeContainingIgnoreCase(
-            Integer buyerId, String status, String keyword, Pageable pageable);
+    Page<Order> findByBuyer_IdAndStatusAndOrderCodeContainingIgnoreCase(
+            Integer buyerId, Order.Status status, String keyword, Pageable pageable);
 
 
     // =========================
-    // SELL (SEARCH + PAGINATION)
+    // SELL
     // =========================
-    Page<Order> findByUserId(Integer userId, Pageable pageable);
+    Page<Order> findBySeller_Id(Integer sellerId, Pageable pageable);
 
-    Page<Order> findByUserIdAndStatus(
-            Integer userId, String status, Pageable pageable);
+    Page<Order> findBySeller_IdAndStatus(
+            Integer sellerId, Order.Status status, Pageable pageable);
 
-    Page<Order> findByUserIdAndOrderCodeContainingIgnoreCase(
-            Integer userId, String keyword, Pageable pageable);
+    Page<Order> findBySeller_IdAndOrderCodeContainingIgnoreCase(
+            Integer sellerId, String keyword, Pageable pageable);
 
-    Page<Order> findByUserIdAndStatusAndOrderCodeContainingIgnoreCase(
-            Integer userId, String status, String keyword, Pageable pageable);
+    Page<Order> findBySeller_IdAndStatusAndOrderCodeContainingIgnoreCase(
+            Integer sellerId, Order.Status status, String keyword, Pageable pageable);
 }

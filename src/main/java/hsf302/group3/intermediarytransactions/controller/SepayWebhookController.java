@@ -84,11 +84,11 @@ public class SepayWebhookController {
             }
 
             order.setPaymentStatus(PaymentStatus.SUCCESS);
-            order.setStatus("COMPLETED");
+            order.setStatus(Order.Status.COMPLETED);
             orderRepository.save(order);
 
             walletService.deposit(
-                    order.getUserId(),
+                    order.getSeller().getId(),
                     order.getTotalAmount(),
                     "Thanh toán - " + content
             );

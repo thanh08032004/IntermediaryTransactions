@@ -21,20 +21,18 @@ public class Order {
     @Column(name = "order_code", unique = true, nullable = false)
     private String orderCode;
 
-    // ✅ NGƯỜI BÁN
-    @Column(name = "user_id", nullable = false)
-    private Integer userId;
     @ManyToOne
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
-    // ✅ NGƯỜI MUA (NEW)
-    @Column(name = "buyer_id")
-    private Integer buyerId;
+
     @ManyToOne
-    @JoinColumn(name = "category_id", insertable = false, updatable = false)
-    private Category category;
+    @JoinColumn(name = "buyer_id")
+    private User buyer;
+
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status; // PENDING, PROCESSING, COMPLETED, CANCELLED
+    private Status status;
+
 
     @Column(name = "total_amount", nullable = false)
     private BigDecimal totalAmount;
@@ -51,4 +49,11 @@ public class Order {
 
     @Column(name = "updated_at", insertable = false, updatable = false)
     private java.sql.Timestamp updatedAt;
+
+    public enum Status {
+        PENDING,
+        PROCESSING,
+        COMPLETED,
+        CANCELLED
+    }
 }

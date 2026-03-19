@@ -1,12 +1,13 @@
 package hsf302.group3.intermediarytransactions.controller;
 
 import hsf302.group3.intermediarytransactions.entity.Order;
+import hsf302.group3.intermediarytransactions.entity.Product;
+import hsf302.group3.intermediarytransactions.entity.User;
 import hsf302.group3.intermediarytransactions.repository.OrderRepository;
+import hsf302.group3.intermediarytransactions.repository.ProductRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +19,15 @@ public class MarketController {
     @Autowired
     private OrderRepository orderRepository;
 
+    @Autowired
+    private ProductRepository productRepository;
+
     private Integer getUserId(HttpSession session) {
         return (Integer) session.getAttribute("userId");
     }
 
     // =========================
-    // TRANG CHỢ (FILTER + PAGINATION)
+    // TRANG CHỢ (PRODUCT)
     // =========================
     @GetMapping("")
     public String market(
@@ -32,32 +36,30 @@ public class MarketController {
             @RequestParam(defaultValue = "0") int page,
             Model model) {
 
-        int size = 6;
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, 6);
 
-        Page<Order> orderPage;
+        Page<Product> productPage;
 
         if (minPrice != null && maxPrice != null) {
-            orderPage = orderRepository
-                    .findByStatusAndTotalAmountBetween("PENDING", minPrice, maxPrice, pageable);
+            productPage = productRepository.findByStatusAndPriceBetween(
+                    Product.Status.ACTIVE, minPrice, maxPrice, pageable);
 
         } else if (minPrice != null) {
-            orderPage = orderRepository
-                    .findByStatusAndTotalAmountGreaterThanEqual("PENDING", minPrice, pageable);
+            productPage = productRepository.findByStatusAndPriceGreaterThanEqual(
+                    Product.Status.ACTIVE, minPrice, pageable);
 
         } else if (maxPrice != null) {
-            orderPage = orderRepository
-                    .findByStatusAndTotalAmountLessThanEqual("PENDING", maxPrice, pageable);
+            productPage = productRepository.findByStatusAndPriceLessThanEqual(
+                    Product.Status.ACTIVE, maxPrice, pageable);
 
         } else {
-            orderPage = orderRepository
-                    .findByStatus("PENDING", pageable);
+            productPage = productRepository.findByStatus(
+                    Product.Status.ACTIVE, pageable);
         }
 
-        model.addAttribute("orders", orderPage.getContent());
+        model.addAttribute("products", productPage.getContent());
         model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", orderPage.getTotalPages());
-
+        model.addAttribute("totalPages", productPage.getTotalPages());
         model.addAttribute("minPrice", minPrice);
         model.addAttribute("maxPrice", maxPrice);
 
@@ -65,7 +67,7 @@ public class MarketController {
     }
 
     // =========================
-    // ĐƠN MUA (SEARCH + PAGINATION)
+    // ĐƠN MUA
     // =========================
     @GetMapping("/my-buy")
     public String myBuy(
@@ -76,43 +78,38 @@ public class MarketController {
             HttpSession session) {
 
         Integer userId = getUserId(session);
-
-//        if (userId == null) {
-//            return "redirect:/login";
-//        }
-
-        int size = 5;
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, 5);
 
         Page<Order> orderPage;
 
         if (!status.equalsIgnoreCase("ALL")) {
 
+            Order.Status st = Order.Status.valueOf(status);
+
             if (!keyword.isEmpty()) {
                 orderPage = orderRepository
-                        .findByBuyerIdAndStatusAndOrderCodeContainingIgnoreCase(
-                                userId, status, keyword, pageable);
+                        .findByBuyer_IdAndStatusAndOrderCodeContainingIgnoreCase(
+                                userId, st, keyword, pageable);
             } else {
                 orderPage = orderRepository
-                        .findByBuyerIdAndStatus(userId, status, pageable);
+                        .findByBuyer_IdAndStatus(userId, st, pageable);
             }
 
         } else {
 
             if (!keyword.isEmpty()) {
                 orderPage = orderRepository
-                        .findByBuyerIdAndOrderCodeContainingIgnoreCase(
+                        .findByBuyer_IdAndOrderCodeContainingIgnoreCase(
                                 userId, keyword, pageable);
             } else {
                 orderPage = orderRepository
-                        .findByBuyerId(userId, pageable);
+                        .findByBuyer_Id(userId, pageable);
             }
         }
 
         model.addAttribute("orders", orderPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", orderPage.getTotalPages());
-
         model.addAttribute("keyword", keyword);
         model.addAttribute("currentStatus", status);
 
@@ -120,7 +117,7 @@ public class MarketController {
     }
 
     // =========================
-    // ĐƠN BÁN (SEARCH + PAGINATION)
+    // ĐƠN BÁN
     // =========================
     @GetMapping("/my-sell")
     public String mySell(
@@ -131,43 +128,38 @@ public class MarketController {
             HttpSession session) {
 
         Integer userId = getUserId(session);
-
-//        if (userId == null) {
-//            return "redirect:/login";
-//        }
-
-        int size = 5;
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, 5);
 
         Page<Order> orderPage;
 
         if (!status.equalsIgnoreCase("ALL")) {
 
+            Order.Status st = Order.Status.valueOf(status);
+
             if (!keyword.isEmpty()) {
                 orderPage = orderRepository
-                        .findByUserIdAndStatusAndOrderCodeContainingIgnoreCase(
-                                userId, status, keyword, pageable);
+                        .findBySeller_IdAndStatusAndOrderCodeContainingIgnoreCase(
+                                userId, st, keyword, pageable);
             } else {
                 orderPage = orderRepository
-                        .findByUserIdAndStatus(userId, status, pageable);
+                        .findBySeller_IdAndStatus(userId, st, pageable);
             }
 
         } else {
 
             if (!keyword.isEmpty()) {
                 orderPage = orderRepository
-                        .findByUserIdAndOrderCodeContainingIgnoreCase(
+                        .findBySeller_IdAndOrderCodeContainingIgnoreCase(
                                 userId, keyword, pageable);
             } else {
                 orderPage = orderRepository
-                        .findByUserId(userId, pageable);
+                        .findBySeller_Id(userId, pageable);
             }
         }
 
         model.addAttribute("orders", orderPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", orderPage.getTotalPages());
-
         model.addAttribute("keyword", keyword);
         model.addAttribute("currentStatus", status);
 
@@ -181,21 +173,23 @@ public class MarketController {
     public String buyOrder(@PathVariable Integer id, HttpSession session) {
 
         Integer userId = getUserId(session);
-
-        if (userId == null) {
-            return "redirect:/login";
-        }
+        if (userId == null) return "redirect:/login";
 
         Order order = orderRepository.findById(id).orElse(null);
 
-        if (order != null && "PENDING".equals(order.getStatus())) {
+        if (order != null && order.getStatus() == Order.Status.PENDING) {
 
-            if (userId.equals(order.getUserId())) {
+            // không cho tự mua của mình
+            if (userId.equals(order.getSeller().getId())) {
                 return "redirect:/market";
             }
 
-            order.setBuyerId(userId);
-            order.setStatus("PROCESSING");
+            User buyer = new User();
+            buyer.setId(userId);
+
+            order.setBuyer(buyer);
+            order.setStatus(Order.Status.PROCESSING);
+
             orderRepository.save(order);
         }
 
@@ -209,10 +203,7 @@ public class MarketController {
     public String detail(@PathVariable Integer id, Model model) {
 
         Order order = orderRepository.findById(id).orElse(null);
-
-        if (order == null) {
-            return "redirect:/market";
-        }
+        if (order == null) return "redirect:/market";
 
         model.addAttribute("order", order);
         return "order-detail";
@@ -227,7 +218,7 @@ public class MarketController {
         Order order = orderRepository.findById(id).orElse(null);
 
         if (order != null) {
-            order.setStatus("CANCELLED");
+            order.setStatus(Order.Status.CANCELLED);
             orderRepository.save(order);
         }
 
@@ -241,13 +232,12 @@ public class MarketController {
     public String complete(@PathVariable Integer id, HttpSession session) {
 
         Integer userId = getUserId(session);
-
         Order order = orderRepository.findById(id).orElse(null);
 
         if (order != null && userId != null
-                && userId.equals(order.getUserId())) {
+                && userId.equals(order.getSeller().getId())) {
 
-            order.setStatus("COMPLETED");
+            order.setStatus(Order.Status.COMPLETED);
             orderRepository.save(order);
         }
 

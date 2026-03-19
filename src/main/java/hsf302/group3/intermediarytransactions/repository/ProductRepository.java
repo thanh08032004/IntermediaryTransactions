@@ -11,5 +11,14 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     Page<Product> findByNameContainingIgnoreCase(String keyword, Pageable pageable);
     boolean existsByCategoryId(Integer categoryId);
+    Page<Product> findByStatus(Product.Status status, Pageable pageable);
 
+    Page<Product> findByStatusAndPriceBetween(
+            Product.Status status, Double min, Double max, Pageable pageable);
+
+    Page<Product> findByStatusAndPriceGreaterThanEqual(
+            Product.Status status, Double min, Pageable pageable);
+
+    Page<Product> findByStatusAndPriceLessThanEqual(
+            Product.Status status, Double max, Pageable pageable);
     }
