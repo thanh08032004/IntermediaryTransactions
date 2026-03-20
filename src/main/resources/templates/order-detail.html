@@ -91,8 +91,15 @@
           </table>
 
           <!-- ACTION -->
+          <!-- ACTION -->
           <div class="text-end mt-3">
 
+            <a th:href="@{/payment/{id}(id=${order.id})}"
+               class="btn btn-success">
+              💳 Thanh toán
+            </a>
+
+            <!-- Back -->
             <a href="/market/my-buy" class="btn btn-secondary">
               ← Back
             </a>

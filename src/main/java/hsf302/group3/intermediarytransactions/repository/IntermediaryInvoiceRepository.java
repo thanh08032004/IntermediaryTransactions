@@ -7,8 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface IntermediaryInvoiceRepository extends JpaRepository<IntermediaryInvoice, String> {
 
-    Page<IntermediaryInvoice> findBySellerIdOrBuyerId(Integer sellerId, Integer buyerId, Pageable pageable);
-    
+    Page<IntermediaryInvoice> findBySellerIdOrBuyerIdOrderByCreatedAtDesc(Integer sellerId, Integer buyerId, Pageable pageable);
+
     Page<IntermediaryInvoice> findBySellerIdOrBuyerIdAndInvoiceCodeContainingIgnoreCaseOrSubjectContainingIgnoreCase(
-            Integer sellerId, Integer buyerId, String codeKeyword, String subjectKeyword, Pageable pageable);
+            Integer sellerId, Integer buyerId, String invoiceCodeKeyword, String subjectKeyword, Pageable pageable
+    );
 }

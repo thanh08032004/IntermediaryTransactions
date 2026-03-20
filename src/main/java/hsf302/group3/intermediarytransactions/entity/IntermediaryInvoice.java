@@ -35,7 +35,7 @@ public class IntermediaryInvoice {
     private BigDecimal price;
 
     @Column(name = "fee_payer")
-    private String feePayer; // BUYER / SELLER
+    private String feePayer;
 
     @Column(name = "fee_amount")
     private BigDecimal feeAmount;
@@ -50,10 +50,10 @@ public class IntermediaryInvoice {
     private String contactMethod;
 
     @Column(name = "hidden_info", columnDefinition = "TEXT")
-    private String hiddenInfo; // chỉ hiển thị khi SUCCESS
+    private String hiddenInfo;
 
     @Column(name = "status", length = 20)
-    private String status; // PENDING, PAID, CHECKING, COMPLAINT, SUCCESS, CANCELLED
+    private String status;
 
     @Column(name = "share_link", columnDefinition = "TEXT")
     private String shareLink;

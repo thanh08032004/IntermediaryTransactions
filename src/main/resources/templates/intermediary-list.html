@@ -83,12 +83,9 @@
                                 <th>Code</th>
                                 <th>Subject</th>
                                 <th>Price</th>
-                                <th>Fee Payer</th>
-                                <th>Fee Amount</th>
-                                <th>Buyer Total</th>
                                 <th>Status</th>
                                 <th>Contact</th>
-                                <th>Share Link</th>
+                                <th>Action</th>
                             </tr>
                             </thead>
 
@@ -97,22 +94,21 @@
                                 <td th:text="${inv.invoiceId}"></td>
                                 <td th:text="${inv.invoiceCode}"></td>
                                 <td th:text="${inv.subject}"></td>
-                                <td th:text="${#numbers.formatDecimal(inv.price,0,'COMMA',0,'POINT')} + ' $'"></td>
-                                <td th:text="${inv.feePayer}"></td>
-                                <td th:text="${#numbers.formatDecimal(inv.feeAmount,0,'COMMA',0,'POINT')} + ' $'"></td>
-                                <td th:text="${#numbers.formatDecimal(inv.buyerTotal,0,'COMMA',0,'POINT')} + ' $'"></td>
+                                <td th:text="${#numbers.formatDecimal(inv.price,0,'COMMA',0,'POINT')} + ' đ'"></td>
                                 <td>
-            <span th:class="${inv.status == 'SUCCESS'} ? 'badge bg-success' :
-                            (inv.status == 'PENDING') ? 'badge bg-warning' :
-                            (inv.status == 'CHECKING') ? 'badge bg-info' :
-                            (inv.status == 'COMPLAINT') ? 'badge bg-danger' :
-                            'badge bg-secondary'"
-                  th:text="${inv.status}">
-            </span>
+        <span th:switch="${inv.status}">
+    <span th:case="'SUCCESS'" class="badge bg-success" th:text="${inv.status}"></span>
+    <span th:case="'PENDING'" class="badge bg-warning" th:text="${inv.status}"></span>
+    <span th:case="'CHECKING'" class="badge bg-info" th:text="${inv.status}"></span>
+    <span th:case="'COMPLAINT'" class="badge bg-danger" th:text="${inv.status}"></span>
+    <span th:case="*" class="badge bg-secondary" th:text="${inv.status}"></span>
+                                    </span>
                                 </td>
                                 <td th:text="${inv.contactMethod}"></td>
                                 <td>
-                                    <a th:href="${inv.shareLink}" target="_blank">View</a>
+                                    <a th:href="@{'/intermediary/view/' + ${inv.invoiceId}}" class="btn btn-primary btn-sm">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
                                 </td>
                             </tr>
                             </tbody>

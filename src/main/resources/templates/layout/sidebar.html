@@ -112,7 +112,7 @@
            th:classappend="${currentUri.startsWith('/custom')} ? 'active'">
 
         <span>
-            <i class="bi bi-menu-button-wide me-2"></i> Custom Menu
+            <i class="bi bi-menu-button-wide me-2"></i> Intermediary
         </span>
             <i class="bi bi-chevron-down"></i>
         </a>
@@ -121,10 +121,10 @@
              id="customMenu"
              th:classappend="${currentUri.startsWith('/custom')} ? 'show'">
 
-            <a th:href="@{/custom/link1}"
+            <a th:href="@{/intermediary/list}"
                class="d-block py-2"
-               th:classappend="${currentUri.startsWith('/custom/link1')} ? 'active'">
-                <i class="bi bi-link-45deg me-2"></i> Link 1
+               th:classappend="${currentUri.startsWith('/intermediary')} ? 'active'">
+                <i class="bi bi-file-earmark-text me-2"></i> Intermediary Orders
             </a>
 
             <a th:href="@{/custom/link2}"

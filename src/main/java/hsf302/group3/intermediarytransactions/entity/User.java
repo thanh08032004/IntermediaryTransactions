@@ -2,6 +2,8 @@ package hsf302.group3.intermediarytransactions.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -43,4 +45,5 @@ public class User {
     public User(Integer id) {
         this.id = id;
     }
+
 }

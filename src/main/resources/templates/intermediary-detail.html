@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice Detail</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; }
+        .invoice-card { background-color: #fff; border-radius: 8px; padding: 25px; box-shadow: 0 0 12px rgba(0,0,0,0.08); }
+        .invoice-row { display: flex; margin-bottom: 12px; align-items: center; }
+        .invoice-label { width: 25%; font-weight: 600; }
+        .invoice-value { width: 75%; }
+        .badge-status { padding: 0.4em 0.7em; font-size: 0.9em; }
+        .action-buttons { margin-top: 20px; }
+    </style>
+</head>
+<body class="bg-light">
+
+<!-- HEADER -->
+<div th:replace="~{layout/header :: header('Product Management')}"></div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <div th:replace="~{layout/sidebar :: sidebar}"></div>
+
+    <!-- CONTENT -->
+    <div class="content">
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-9">
+
+            <div class="invoice-card">
+                <form th:action="@{/intermediary/update/{id}(id=${invoice.invoiceId})}" method="post">
+
+                    <!-- Hidden inputs để giữ thông tin cần thiết -->
+                    <input type="hidden" name="invoiceId" th:value="${invoice.invoiceId}">
+                    <input type="hidden" name="sellerId" th:value="${invoice.sellerId}">
+                    <input type="hidden" name="buyerId" th:value="${invoice.buyerId}">
+
+                    <!-- Các field của invoice -->
+                    <div class="invoice-row">
+                        <div class="invoice-label">Invoice ID:</div>
+                        <div class="invoice-value" th:text="${invoice.invoiceId}"></div>
+                    </div>
+
+                    <div class="invoice-row">
+                        <div class="invoice-label">Code:</div>
+                        <div class="invoice-value">
+                            <span th:if="${!editable}" th:text="${invoice.invoiceCode}"></span>
+                            <input th:if="${editable}" type="text" th:value="${invoice.invoiceCode}" class="form-control form-control-sm" name="invoiceCode">
+                        </div>
+                    </div>
+
+                    <div class="invoice-row">
+                        <div class="invoice-label">Subject:</div>
+                        <div class="invoice-value">
+                            <span th:if="${!editable}" th:text="${invoice.subject}"></span>
+                            <input th:if="${editable}" type="text" th:value="${invoice.subject}" class="form-control form-control-sm" name="subject">
+                        </div>
+                    </div>
+
+                    <div class="invoice-row">
+                        <div class="invoice-label">Price:</div>
+                        <div class="invoice-value">
+                            <span th:if="${!editable}" th:text="${#numbers.formatDecimal(invoice.price,0,'COMMA',0,'POINT')} + ' $'"></span>
+                            <input th:if="${editable}" type="number" min="0" th:value="${invoice.price}" class="form-control form-control-sm" name="price">
+                        </div>
+                    </div>
+
+                    <div class="invoice-row">
+                        <div class="invoice-label">Fee Payer:</div>
+                        <div class="invoice-value">
+                            <span th:if="${!editable}" th:text="${invoice.feePayer}"></span>
+                            <select th:if="${editable}" class="form-select form-select-sm" name="feePayer">
+                                <option value="BUYER" th:selected="${invoice.feePayer == 'BUYER'}">Buyer</option>
+                                <option value="SELLER" th:selected="${invoice.feePayer == 'SELLER'}">Seller</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="invoice-row">
+                        <div class="invoice-label">Fee Amount:</div>
+                        <div class="invoice-value">
+                            <span th:if="${!editable}" th:text="${#numbers.formatDecimal(invoice.feeAmount,0,'COMMA',0,'POINT')} + ' $'"></span>
+                            <input th:if="${editable}" type="number" min="0" th:value="${invoice.feeAmount}" class="form-control form-control-sm" name="feeAmount">
+                        </div>
+                    </div>
+
+                    <div class="invoice-row">
+                        <div class="invoice-label">Buyer Total:</div>
+                        <div class="invoice-value">
+                            <span th:if="${!editable}" th:text="${#numbers.formatDecimal(invoice.buyerTotal,0,'COMMA',0,'POINT')} + ' $'"></span>
+                            <input th:if="${editable}" type="number" min="0" th:value="${invoice.buyerTotal}" class="form-control form-control-sm" name="buyerTotal">
+                        </div>
+                    </div>
+
+                    <div class="invoice-row">
+                        <div class="invoice-label">Status:</div>
+                        <div class="invoice-value">
+                            <span th:switch="${invoice.status}">
+                                <span th:case="'SUCCESS'" class="badge badge-status bg-success" th:text="${invoice.status}"></span>
+                                <span th:case="'PENDING'" class="badge badge-status bg-warning" th:text="${invoice.status}"></span>
+                                <span th:case="'CHECKING'" class="badge badge-status bg-info" th:text="${invoice.status}"></span>
+                                <span th:case="'COMPLAINT'" class="badge badge-status bg-danger" th:text="${invoice.status}"></span>
+                                <span th:case="*" class="badge badge-status bg-secondary" th:text="${invoice.status}"></span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="invoice-row">
+                        <div class="invoice-label">Contact:</div>
+                        <div class="invoice-value">
+                            <span th:if="${!editable}" th:text="${invoice.contactMethod}"></span>
+                            <input th:if="${editable}" type="text" th:value="${invoice.contactMethod}" class="form-control form-control-sm" name="contactMethod">
+                        </div>
+                    </div>
+
+                    <div class="invoice-row">
+                        <div class="invoice-label">Share Link:</div>
+                        <div class="invoice-value">
+                            <span th:if="${!editable}">
+                                <a th:href="${invoice.shareLink}" target="_blank">View</a>
+                            </span>
+                            <input th:if="${editable}" type="text" th:value="${invoice.shareLink}" class="form-control form-control-sm" name="shareLink">
+                        </div>
+                    </div>
+
+                    <div class="invoice-row">
+                        <div class="invoice-label">Notes:</div>
+                        <div class="invoice-value">
+                            <span th:if="${!editable}" th:text="${invoice.description}"></span>
+                            <textarea th:if="${editable}" class="form-control" name="description" th:text="${invoice.description}"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Nút Update & Delete -->
+                    <div class="action-buttons" th:if="${editable}">
+                        <button type="submit" class="btn btn-warning me-2">
+                            <i class="bi bi-pencil-square"></i> Update
+                        </button>
+                        <a th:href="@{/intermediary/delete/{id}(id=${invoice.invoiceId})}"
+                           onclick="return confirm('Are you sure to delete this invoice?');"
+                           class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Delete
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
