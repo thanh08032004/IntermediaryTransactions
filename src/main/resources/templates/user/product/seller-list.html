@@ -2,127 +2,208 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Seller Product List</title>
+    <title>My Product List</title>
 
+    <!-- Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Icon -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+
     <link rel="stylesheet" th:href="@{/style.css}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f5f5;
+        }
+
+        .table img {
+            width: 80px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .table tbody tr:nth-child(odd) {
+            background-color: #f9f9f9 !important;
+        }
+
+        .table tbody tr:nth-child(even) {
+            background-color: #ffffff !important;
+        }
+
+        .table tbody tr:hover {
+            background-color: #e6f2ff !important;
+        }
+
+        .btn-danger {
+            background-color: #ee4d2d;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background-color: #d8432a;
+        }
+
+        .table thead th {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .table tbody td {
+            vertical-align: middle;
+        }
+    </style>
 </head>
+
 <body class="bg-light">
 
 <!-- HEADER -->
-<div th:replace="~{layout/header :: header('Home Page')}"></div>
+<div th:replace="~{layout/header :: header('My Products')}"></div>
 
-<!-- LAYOUT -->
 <div class="layout">
 
     <!-- SIDEBAR -->
     <div th:replace="~{layout/sidebar :: sidebar}"></div>
+
     <!-- CONTENT -->
     <div class="content">
         <div class="container mt-4">
 
-            <!-- TITLE + ADD BUTTON -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h3 class="fw-bold">📦 My Products</h3>
+            <!-- TITLE + ADD -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>📦 My Products</h3>
+
                 <a href="/seller-products/add" class="btn btn-success">
                     <i class="bi bi-plus-circle"></i> Add Product
                 </a>
             </div>
 
-            <!-- TABLE -->
-            <div class="card shadow-sm">
-                <div class="card-body p-0">
-                    <table class="table table-hover mb-0 align-middle text-center">
-                        <thead class="table-dark">
-                        <tr>
-                            <th>Name</th>
-                            <th>Price</th>
-                            <th>Status</th>
-                            <th width="180">Action</th>
-                        </tr>
-                        </thead>
+            <!-- SEARCH -->
+            <form method="get" th:action="@{/seller-products}" class="row g-2 mb-4">
 
-                        <tbody>
-                        <tr th:each="p : ${products.content}">
-                            <td class="fw-semibold" th:text="${p.name}"></td>
-
-                            <td class="text-success fw-bold"
-                                th:text="${#numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">
-                            </td>
-
-                            <td>
-                        <span class="badge"
-                              th:classappend="${p.status == 'ACTIVE'} ? 'bg-success' : 'bg-secondary'"
-                              th:text="${p.status}">
-                        </span>
-                            </td>
-
-                            <td>
-                                <a class="btn btn-sm btn-primary me-1"
-                                   th:href="@{/seller-products/edit/{id}(id=${p.id})}">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
-
-                                <a class="btn btn-sm btn-danger"
-                                   th:href="@{/seller-products/delete/{id}(id=${p.id})}"
-                                   onclick="return confirm('Delete this product?')">
-                                    <i class="bi bi-trash"></i>
-                                </a>
-                            </td>
-                        </tr>
-
-                        <!-- EMPTY -->
-                        <tr th:if="${products.content.size() == 0}">
-                            <td colspan="4" class="text-muted py-4">
-                                No products found
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                <div class="col-md-4">
+                    <input type="text"
+                           name="keyword"
+                           th:value="${keyword}"
+                           class="form-control"
+                           placeholder="Search product...">
                 </div>
+
+                <div class="col-md-2">
+                    <button class="btn btn-danger w-100">
+                        <i class="bi bi-search"></i> Search
+                    </button>
+                </div>
+
+            </form>
+
+            <!-- TABLE -->
+            <div class="table-responsive">
+                <table class="table table-hover align-middle bg-white shadow-sm">
+
+                    <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Created At</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="p, stat : ${products.content}">
+
+                        <!-- STT -->
+                        <td class="text-center"
+                            th:text="${stat.index + 1 + currentPage * 5}">
+                        </td>
+
+                        <!-- IMAGE -->
+                        <td class="text-center">
+                            <img th:src="@{${p.mainImageUrl}}" alt="Product Image">
+                        </td>
+
+                        <!-- NAME -->
+                        <td th:text="${p.name}"></td>
+
+                        <!-- CATEGORY -->
+                        <td th:text="${p.category != null ? p.category.name : 'N/A'}"></td>
+
+                        <!-- PRICE -->
+                        <td class="text-danger fw-bold"
+                            th:text="${#numbers.formatDecimal(p.price,0,'COMMA',0,'POINT')} + ' đ'"></td>
+
+                        <!-- QUANTITY -->
+                        <td class="text-center" th:text="${p.availableQuantity}"></td>
+
+                        <!-- CREATED -->
+                        <td th:text="${#temporals.format(p.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+
+                        <td class="text-center">
+                            <div class="d-flex justify-content-center gap-1">
+
+                                <!-- VIEW -->
+                                <a th:href="@{/seller-products/{id}/items(id=${p.id})}"
+                                   class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1">
+                                    <i class="bi bi-eye"></i> View
+                                </a>
+
+                                <button type="button"
+                                        class="btn btn-danger btn-sm d-flex align-items-center gap-1"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteModal"
+                                        th:attr="data-id=${p.id}">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button>
+
+                            </div>
+                        </td>
+
+                    </tr>
+                    </tbody>
+
+                </table>
+            </div>
+
+            <!-- EMPTY -->
+            <div th:if="${products.totalElements == 0}" class="text-center text-muted mt-4">
+                No products found
             </div>
 
             <!-- PAGINATION -->
-            <nav class="mt-4">
+            <nav class="mt-4" th:if="${products.totalPages > 1}">
                 <ul class="pagination justify-content-center">
 
-                    <!-- PREVIOUS -->
-                    <li class="page-item"
-                        th:classappend="${currentPage == 0} ? 'disabled'">
+                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
                         <a class="page-link"
-                           th:href="@{/seller-products(
-                   page=${currentPage - 1},
-                   keyword=${keyword},
-                   categoryId=${categoryId})}">
-                            <i class="bi bi-chevron-left"></i>
+                           th:href="@{/seller-products(page=${currentPage - 1}, keyword=${keyword})}">
+                            «
                         </a>
                     </li>
 
-                    <!-- PAGE NUMBER -->
                     <li class="page-item"
-                        th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:each="i : ${#numbers.sequence(0, products.totalPages - 1)}"
                         th:classappend="${i == currentPage} ? 'active'">
-
                         <a class="page-link"
                            th:text="${i + 1}"
-                           th:href="@{/seller-products(
-                   page=${i},
-                   keyword=${keyword},
-                   categoryId=${categoryId})}">
+                           th:href="@{/seller-products(page=${i}, keyword=${keyword})}">
                         </a>
                     </li>
 
-                    <!-- NEXT -->
                     <li class="page-item"
-                        th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+                        th:classappend="${currentPage + 1 == products.totalPages} ? 'disabled'">
                         <a class="page-link"
-                           th:href="@{/seller-products(
-                   page=${currentPage + 1},
-                   keyword=${keyword},
-                   categoryId=${categoryId})}">
-                            <i class="bi bi-chevron-right"></i>
+                           th:href="@{/seller-products(page=${currentPage + 1}, keyword=${keyword})}">
+                            »
                         </a>
                     </li>
 
@@ -131,9 +212,51 @@
 
         </div>
     </div>
+
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- DELETE CONFIRM MODAL -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog mt-5">
+        <div class="modal-content">
 
+            <div class="modal-header">
+                <h5 class="modal-title text-danger">
+                    <i class="bi bi-exclamation-triangle"></i> Confirm Delete
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                Are you sure you want to delete this product?
+            </div>
+
+            <div class="modal-footer">
+                <form id="deleteForm" method="post">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                    <button type="submit" class="btn btn-danger">
+                        Delete
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    const deleteModal = document.getElementById('deleteModal');
+
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const productId = button.getAttribute('data-id');
+
+        const form = document.getElementById('deleteForm');
+        form.action = '/seller-products/delete/' + productId;
+    });
+</script>
 </body>
 </html>

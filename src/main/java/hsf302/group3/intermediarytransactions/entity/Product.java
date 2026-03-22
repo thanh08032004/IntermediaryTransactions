@@ -49,10 +49,12 @@ public class Product {
     @Column(precision = 15, scale = 2)
     private BigDecimal price = BigDecimal.ZERO;
 
-    private Integer quantity = 0;
 
     @Column(columnDefinition = "TEXT")
     private String description;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductItem> productItems;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> cartItems;
@@ -66,6 +68,15 @@ public class Product {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    @Transient
+    public int getAvailableQuantity() {
+        if (productItems == null) return 0;
+
+        return (int) productItems.stream()
+                .filter(item -> item.getStatus() != null
+                        && item.getStatus() == ItemStatus.AVAILABLE)
+                .count();
+    }
     @PrePersist
     public void prePersist() {
         createdAt = LocalDateTime.now();
@@ -84,4 +95,5 @@ public class Product {
         }
         return "/images/default.jpg";
     }
+
 }

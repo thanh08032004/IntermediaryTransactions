@@ -1,6 +1,8 @@
 package hsf302.group3.intermediarytransactions.controller;
 
 import hsf302.group3.intermediarytransactions.entity.Product;
+import hsf302.group3.intermediarytransactions.entity.ProductItem;
+import hsf302.group3.intermediarytransactions.repository.ProductItemRepository;
 import hsf302.group3.intermediarytransactions.security.CustomUserDetails;
 import hsf302.group3.intermediarytransactions.service.CategoryService;
 import hsf302.group3.intermediarytransactions.service.ProductSellerService;
@@ -13,6 +15,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/seller-products")
 @PreAuthorize("hasRole('USER')")
@@ -23,7 +27,8 @@ public class SellerProductController {
 
     @Autowired
     private CategoryService categoryService;
-
+    @Autowired
+    ProductItemRepository productItemService;
     //  LIST
     @GetMapping
     public String list(@RequestParam(defaultValue = "") String keyword,
@@ -84,8 +89,7 @@ public class SellerProductController {
         return "redirect:/seller-products";
     }
 
-    //  DELETE
-    @GetMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     public String delete(@PathVariable Integer id, Authentication authentication) {
         CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
         Integer sellerId = user.getUser().getId();
@@ -93,5 +97,22 @@ public class SellerProductController {
 
         return "redirect:/seller-products";
     }
+    @GetMapping("/{id}/items")
+    public String viewProductItems(
+            @PathVariable("id") int productId,
+            Authentication authentication,
+            Model model
+    ) {
+        CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
+        Integer sellerId = user.getUser().getId();
 
+        Product product = productService.getById(productId, sellerId);
+
+        List<ProductItem> items = productItemService.findByProductId(productId);
+
+        model.addAttribute("product", product);
+        model.addAttribute("items", items);
+
+        return "user/product/product-item";
+    }
 }

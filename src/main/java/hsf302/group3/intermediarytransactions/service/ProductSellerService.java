@@ -46,7 +46,6 @@ public class ProductSellerService {
 
         old.setName(updated.getName());
         old.setPrice(updated.getPrice());
-        old.setQuantity(updated.getQuantity());
         old.setDescription(updated.getDescription());
         old.setCategory(updated.getCategory());
         old.setStatus(updated.getStatus());
@@ -54,10 +53,8 @@ public class ProductSellerService {
         return productRepository.save(old);
     }
 
-    // DELETE (soft)
     public void delete(Integer id, Integer sellerId) {
         Product p = getById(id, sellerId);
-        p.setStatus(ProductStatus.INACTIVE);
-        productRepository.save(p);
+        productRepository.delete(p);
     }
 }

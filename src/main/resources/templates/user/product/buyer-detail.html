@@ -102,12 +102,15 @@
 
 <div th:replace="~{layout/header :: header('Product Detail')}"></div>
 
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <div th:replace="~{layout/sidebar :: sidebar}"></div>
+
+    <!-- CONTENT -->
+    <div class="content">
 <div class="container-fluid mt-4">
     <div class="row">
-        <!-- SIDEBAR -->
-        <div class="col-md-3">
-            <div th:replace="~{layout/sidebar :: sidebar}"></div>
-        </div>
 
         <!-- MAIN CONTENT -->
         <div class="col-md-9">
@@ -152,6 +155,8 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
     </div>
 </div>
 <!-- Share Modal -->

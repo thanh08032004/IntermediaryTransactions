@@ -30,30 +30,44 @@ public class CartService {
                     return cartRepository.save(cart);
                 });
     }
-    // Thêm sản phẩm vào giỏ
     @Transactional
     public void addToCart(User user, Integer productId, Integer quantity) {
         Cart cart = getCartByUser(user);
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
+        if (product.getSupplier() != null
+                && product.getSupplier().getId().equals(user.getId())) {
+            throw new RuntimeException("Bạn không thể mua sản phẩm của chính mình!");
+        }
+        if (product.getAvailableQuantity() <= 0) {
+            throw new RuntimeException("Sản phẩm đã hết hàng!");
+        }
 
-        // Kiểm tra nếu sản phẩm đã có trong giỏ
         CartItem cartItem = cartItemRepository.findByCartAndProduct(cart, product)
-                .orElseGet(() -> {
-                    CartItem item = new CartItem();
-                    item.setCart(cart);
-                    item.setProduct(product);
-                    item.setPrice(product.getPrice());
-                    cart.getItems().add(item);
-                    return item;
-                });
+                .orElse(null);
 
-        cartItem.setQuantity(cartItem.getQuantity() != null ? cartItem.getQuantity() + quantity : quantity);
+        int currentQuantity = (cartItem != null && cartItem.getQuantity() != null)
+                ? cartItem.getQuantity()
+                : 0;
+
+        if (currentQuantity + quantity > product.getAvailableQuantity()) {
+            throw new RuntimeException("Số lượng vượt quá tồn kho!");
+        }
+
+        if (cartItem == null) {
+            cartItem = new CartItem();
+            cartItem.setCart(cart);
+            cartItem.setProduct(product);
+            cartItem.setPrice(product.getPrice());
+            cartItem.setQuantity(quantity);
+            cart.getItems().add(cartItem);
+        } else {
+            cartItem.setQuantity(currentQuantity + quantity);
+        }
 
         cartRepository.save(cart);
     }
-
     @Transactional
     public void updateQuantity(User user, Integer productId, Integer quantity) {
         Cart cart = getCartByUser(user);

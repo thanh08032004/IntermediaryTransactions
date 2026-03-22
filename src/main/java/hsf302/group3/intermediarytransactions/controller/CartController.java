@@ -9,6 +9,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 
@@ -22,10 +23,19 @@ public class CartController {
     @PostMapping("/add")
     public String addToCart(@AuthenticationPrincipal CustomUserDetails userDetails,
                             @RequestParam Integer productId,
-                            @RequestParam(defaultValue = "1") Integer quantity) {
-        User user = userDetails.getUser();
-        cartService.addToCart(user, productId, quantity);
-        return "redirect:/cart"; // chuyển sang trang giỏ hàng
+                            @RequestParam(defaultValue = "1") Integer quantity,
+                            RedirectAttributes redirectAttributes) {
+
+        try {
+            User user = userDetails.getUser();
+            cartService.addToCart(user, productId, quantity);
+
+            redirectAttributes.addFlashAttribute("success", "Thêm vào giỏ hàng thành công!");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+
+        return "redirect:/buyer-products";
     }
 
     @GetMapping
