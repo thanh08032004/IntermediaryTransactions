@@ -131,9 +131,10 @@
                 </a>
 
                 <!-- Buyer Intermediary Orders -->
-                <a th:href="@{/market/my-buy}" class="d-block py-2"
-                   th:classappend="${currentUri.startsWith('/market/my-buy')} ? 'active'">
-                    <i class="bi bi-cart me-2"></i> Buyer Intermediary Orders
+                <a th:href="@{/intermediary/my-buy}"
+                class="d-block py-2"
+                th:classappend="${currentUri.startsWith('/intermediary/my-buy')} ? 'active'">
+                <i class="bi bi-cart me-2"></i> Buyer Intermediary Orders
                 </a>
             </div>
         <!-- Business -->
@@ -166,10 +167,10 @@
                 <i class="bi bi-file-earmark-text me-2"></i> Intermediary Orders
             </a>
 
-            <a th:href="@{/custom/link2}"
-               class="d-block py-2"
-               th:classappend="${currentUri.startsWith('/custom/link2')} ? 'active'">
-                <i class="bi bi-link-45deg me-2"></i> Link 2
+            <a th:href="@{/intermediary/my-buy}"
+            class="d-block py-2"
+            th:classappend="${currentUri.startsWith('/intermediary/my-buy')} ? 'active'">
+            <i class="bi bi-cart me-2"></i> Buyer Intermediary Orders
             </a>
 
         </div>

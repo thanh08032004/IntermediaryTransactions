@@ -9,15 +9,20 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    private final CustomUserDetailsService customUserDetailsService;
 
-    public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
+    private final CustomUserDetailsService customUserDetailsService;
+    private final AuthenticationSuccessHandler customLoginSuccessHandler;
+
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService,
+                          AuthenticationSuccessHandler customLoginSuccessHandler) {
         this.customUserDetailsService = customUserDetailsService;
+        this.customLoginSuccessHandler = customLoginSuccessHandler;
     }
 
     @Bean
@@ -37,15 +42,11 @@ public class SecurityConfig {
                 )
                 .formLogin(login -> login
                         .loginPage("/login")
-                        .defaultSuccessUrl("/", true)
+                        //.defaultSuccessUrl("/", true) // bỏ dòng này
+                        .successHandler(customLoginSuccessHandler) // sử dụng handler để redirect sau login
                         .permitAll()
                 )
-//                .rememberMe(remember -> remember
-//                        .key("uniqueAndSecretKey")
-//                        .tokenValiditySeconds(86400 * 7) // ghi nho trong 7 ngay (86400s = 1 ngay)
-//                        .userDetailsService(customUserDetailsService)
-//                        .rememberMeParameter("remember-me")
-//                )
+                //.rememberMe(...) // giữ nguyên nếu cần
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
@@ -55,9 +56,4 @@ public class SecurityConfig {
 
         return http.build();
     }
-
-//    public static void main(String[] args) {
-//        BCryptPasswordEncoder b = new BCryptPasswordEncoder();
-//        System.out.println(b.encode("123456"));
-//    }
 }

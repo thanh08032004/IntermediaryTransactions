@@ -13,26 +13,20 @@ public class FileService {
     private static final String UPLOAD_DIR = "uploads/";
 
     public String upload(MultipartFile file) {
-        if (file == null || file.isEmpty()) return null;
-
         try {
-            // tạo folder nếu chưa có
-            File dir = new File(UPLOAD_DIR);
+            String uploadDir = System.getProperty("user.dir") + "/uploads/";
+
+            File dir = new File(uploadDir);
             if (!dir.exists()) dir.mkdirs();
 
-            // tạo tên file unique
             String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
 
-            File dest = new File(UPLOAD_DIR + fileName);
+            file.transferTo(new File(uploadDir + fileName));
 
-            // lưu file
-            file.transferTo(dest);
+            return "/images/" + fileName;
 
-            // trả về URL để hiển thị
-            return "/uploads/" + fileName;
-
-        } catch (IOException e) {
-            throw new RuntimeException("Upload file failed", e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

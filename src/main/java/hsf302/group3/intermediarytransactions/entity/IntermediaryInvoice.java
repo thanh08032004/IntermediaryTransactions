@@ -5,8 +5,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "intermediary_invoice")
@@ -19,12 +18,12 @@ public class IntermediaryInvoice {
 
     @Id
     @Column(name = "invoice_id", length = 50)
-    private String invoiceId; // trùng với DB: PRIMARY KEY
+    private String invoiceId;
 
     @Column(name = "invoice_code", length = 50, unique = true)
     private String invoiceCode;
 
-    @Column(name = "seller_id")
+    @Column(name = "seller_id", nullable = false)
     private Integer sellerId;
 
     @Column(name = "buyer_id")
@@ -33,11 +32,12 @@ public class IntermediaryInvoice {
     @Column(name = "subject", length = 255)
     private String subject;
 
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     private BigDecimal price;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "fee_payer")
-    private String feePayer;
+    private FeePayer feePayer;
 
     @Column(name = "fee_amount")
     private BigDecimal feeAmount;
@@ -45,9 +45,15 @@ public class IntermediaryInvoice {
     @Column(name = "buyer_total")
     private BigDecimal buyerTotal;
 
-    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    // 🔥 TOKEN thay vì link
+    @Column(name = "share_token", unique = true)
+    private String shareToken;
+
+    // ---------------- IMAGE ----------------
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<IntermediaryInvoiceImage> images = new ArrayList<>();
 
+    // ---------------- INFO ----------------
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
@@ -57,21 +63,52 @@ public class IntermediaryInvoice {
     @Column(name = "hidden_info", columnDefinition = "TEXT")
     private String hiddenInfo;
 
-    @Column(name = "status", length = 20)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private InvoiceStatus status;
 
-    @Column(name = "share_link", columnDefinition = "TEXT")
-    private String shareLink;
-
+    // ---------------- TIME ----------------
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+
+        if (this.invoiceId == null) {
+            this.invoiceId = UUID.randomUUID().toString();
+        }
+
+        if (this.shareToken == null) {
+            this.shareToken = UUID.randomUUID().toString();
+        }
+
+        if (this.status == null) {
+            this.status = InvoiceStatus.PENDING;
+        }
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    // ==================================================
+    // 🔥 COMPUTED FIELD (KHÔNG LƯU DB)
+    // ==================================================
+
+    @Transient
+    public String getShareLink() {
+        return "/intermediary/join/" + shareToken;
+    }
+
     @Transient
     public String getMainImageUrl() {
         if (!images.isEmpty()) {
-            // tìm ảnh chính
             return images.stream()
                     .filter(img -> Boolean.TRUE.equals(img.getIsMain()))
                     .map(IntermediaryInvoiceImage::getImageUrl)

@@ -37,7 +37,7 @@
                         <i class="bi bi-receipt"></i> Create Intermediary Invoice
                     </h4>
 
-                    <form th:action="@{/invoices/create}"
+                    <form th:action="@{/intermediary/create}"
                           th:object="${invoice}"
                           method="post"
                           enctype="multipart/form-data">
@@ -55,7 +55,25 @@
                                 <label class="form-label fw-semibold">Price</label>
                                 <input type="number" step="0.01" th:field="*{price}" class="form-control">
                             </div>
+                            <!-- FEE -->
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label fw-semibold">Fee</label>
+                                <input type="number" step="0.01"
+                                       th:field="*{feeAmount}"
+                                       id="feeAmount"
+                                       class="form-control"
+                                       readonly>
+                            </div>
 
+                            <!-- TOTAL -->
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label fw-semibold">Total (Buyer pays)</label>
+                                <input type="number" step="0.01"
+                                       th:field="*{buyerTotal}"
+                                       id="buyerTotal"
+                                       class="form-control"
+                                       readonly>
+                            </div>
                             <!-- FEE PAYER -->
                             <div class="col-md-3 mb-3">
                                 <label class="form-label fw-semibold">Fee Payer</label>
@@ -176,6 +194,34 @@
         }
     }
 </script>
+<script>
+    function calculateFee() {
+        const price = parseFloat(document.querySelector("[name='price']").value) || 0;
+        const feePayer = document.querySelector("[name='feePayer']").value;
 
+        let fee = 0;
+        if (price <= 1000000) fee = price * 0.05;
+        else if (price <= 5000000) fee = price * 0.03;
+        else fee = price * 0.02;
+
+        let buyerTotal = 0;
+        if (feePayer === "BUYER") {
+            buyerTotal = price + fee; // người mua trả phí
+        } else {
+            buyerTotal = price - fee; // người bán chịu phí
+        }
+
+        // gán trực tiếp vào các input của form
+        document.getElementById("feeAmount").value = fee.toFixed(0);
+        document.getElementById("buyerTotal").value = buyerTotal.toFixed(0);
+    }
+
+    // sự kiện input
+    document.querySelector("[name='price']").addEventListener("input", calculateFee);
+    document.querySelector("[name='feePayer']").addEventListener("change", calculateFee);
+
+    // tính ngay khi load form
+    window.addEventListener("load", calculateFee);
+</script>
 </body>
 </html>
