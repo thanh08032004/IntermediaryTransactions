@@ -82,6 +82,10 @@
                     <i class="bi bi-cart me-2"></i> Buyer Intermediary Orders
                 </a>
             </div>
+            <a th:href="@{/seller-products}"
+               th:classappend="${currentUri.startsWith('/seller-products')} ? 'active'">
+                <i class="bi bi-bag"></i> Business
+            </a>
 
         </div>
 

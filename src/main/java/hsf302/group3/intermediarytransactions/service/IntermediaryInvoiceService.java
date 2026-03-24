@@ -22,9 +22,7 @@ public class IntermediaryInvoiceService {
             return repository.findBySellerIdOrBuyerIdOrderByCreatedAtDesc(userId, userId, pageable);
         }
 
-        return repository.findBySellerIdOrBuyerIdAndInvoiceCodeContainingIgnoreCaseOrSubjectContainingIgnoreCase(
-                userId, userId, keyword, keyword, pageable
-        );
+        return repository.searchInvoices(userId, keyword, pageable);
     }
 
     public Optional<IntermediaryInvoice> getById(String id) {
@@ -38,4 +36,5 @@ public class IntermediaryInvoiceService {
     public void delete(String id) {
         repository.deleteById(id);
     }
+
 }

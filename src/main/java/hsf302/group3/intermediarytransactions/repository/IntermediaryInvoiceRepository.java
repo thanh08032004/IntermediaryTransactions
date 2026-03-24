@@ -14,5 +14,19 @@ public interface IntermediaryInvoiceRepository extends JpaRepository<Intermediar
     Page<IntermediaryInvoice> findBySellerIdOrBuyerIdAndInvoiceCodeContainingIgnoreCaseOrSubjectContainingIgnoreCase(
             Integer sellerId, Integer buyerId, String invoiceCodeKeyword, String subjectKeyword, Pageable pageable
     );
+    @Query("""
+    SELECT i FROM IntermediaryInvoice i
+    WHERE (i.sellerId = :userId OR i.buyerId = :userId)
+      AND (
+            LOWER(i.invoiceCode) LIKE LOWER(CONCAT('%', :keyword, '%'))
+         OR LOWER(i.subject) LIKE LOWER(CONCAT('%', :keyword, '%'))
+      )
+    ORDER BY i.createdAt DESC
+""")
+    Page<IntermediaryInvoice> searchInvoices(
+            @Param("userId") Integer userId,
+            @Param("keyword") String keyword,
+            Pageable pageable
+    );
 
 }

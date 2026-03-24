@@ -1,7 +1,10 @@
 package hsf302.group3.intermediarytransactions.controller;
 
 import hsf302.group3.intermediarytransactions.entity.IntermediaryInvoice;
+import hsf302.group3.intermediarytransactions.entity.IntermediaryInvoiceImage;
+import hsf302.group3.intermediarytransactions.repository.IntermediaryInvoiceRepository;
 import hsf302.group3.intermediarytransactions.security.CustomUserDetails;
+import hsf302.group3.intermediarytransactions.service.FileService;
 import hsf302.group3.intermediarytransactions.service.IntermediaryInvoiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -10,7 +13,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -18,6 +25,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class IntermediaryInvoiceController {
 
     private final IntermediaryInvoiceService invoiceService;
+    private final IntermediaryInvoiceRepository invoiceRepository;
+    private final FileService fileService;
 
     // ------------------- List invoices -------------------
     @GetMapping("/list")
@@ -128,5 +137,31 @@ public class IntermediaryInvoiceController {
         redirectAttributes.addFlashAttribute("success", "deleted");
 
         return "redirect:/intermediary/list";
+    }
+    @PostMapping("/create")
+    public String createInvoice(@ModelAttribute IntermediaryInvoice invoice,
+                                @RequestParam("files") MultipartFile[] files,
+                                @RequestParam("mainIndex") Integer mainIndex) {
+
+        List<IntermediaryInvoiceImage> images = new ArrayList<>();
+
+        for (int i = 0; i < files.length; i++) {
+            MultipartFile file = files[i];
+
+            String url = fileService.upload(file);
+
+            IntermediaryInvoiceImage img = new IntermediaryInvoiceImage();
+            img.setImageUrl(url);
+            img.setIsMain(i == mainIndex);
+            img.setInvoice(invoice);
+
+            images.add(img);
+        }
+
+        invoice.setImages(images);
+
+        invoiceRepository.save(invoice);
+
+        return "redirect:/invoices";
     }
 }
