@@ -21,7 +21,7 @@ public class WalletService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Wallet wallet = walletRepository.findByUser_Id(userId)
+        Wallet wallet = walletRepository.findByUserId(userId)
                 .orElseGet(() -> Wallet.builder()
                         .user(user)
                         .balance(BigDecimal.ZERO)
@@ -45,7 +45,7 @@ public class WalletService {
     @Transactional
     public void pay(Integer userId, BigDecimal amount, Integer orderId) {
 
-        Wallet wallet = walletRepository.findByUser_Id(userId)
+        Wallet wallet = walletRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy ví"));
 
         if (wallet.getBalance().compareTo(amount) < 0) {

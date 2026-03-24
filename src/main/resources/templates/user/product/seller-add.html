@@ -55,12 +55,6 @@
                         <input type="number" step="0.01" th:field="*{price}" class="form-control">
                     </div>
 
-                    <!-- QUANTITY -->
-                    <div class="col-md-3 mb-3">
-                        <label class="form-label fw-semibold">Quantity</label>
-                        <input type="number" th:field="*{quantity}" class="form-control">
-                    </div>
-
                     <!-- CATEGORY -->
                     <div class="col-md-6 mb-3">
                         <label class="form-label fw-semibold">Category</label>
@@ -95,7 +89,7 @@
                     <div class="col-12 mb-3">
                         <label class="form-label fw-semibold">Upload Images</label>
                         <input type="file"
-                               name="images"
+                               th:field="*{uploadedFiles}"
                                multiple
                                class="form-control"
                                onchange="previewImages(event)">

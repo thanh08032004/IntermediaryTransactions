@@ -43,7 +43,7 @@ public class GlobalControllerAdvice {
         model.addAttribute("unreadCount",
                 notificationService.countUnread(user.getId()));
 
-        BigDecimal balance = walletRepository.findByUser_Id(user.getId())
+        BigDecimal balance = walletRepository.findByUserId(user.getId())
                 .map(Wallet::getBalance)
                 .orElse(BigDecimal.ZERO);
 

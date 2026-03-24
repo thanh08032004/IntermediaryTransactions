@@ -2,14 +2,16 @@ package hsf302.group3.intermediarytransactions.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import jakarta.validation.constraints.NotNull;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -31,17 +33,11 @@ public class Product {
     @Column(nullable = false, length = 255)
     private String name;
 
-    // Image Product
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ProductImage> images;
-
-    // Category relationship
     @NotNull
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
 
-    // Supplier relationship (User)
     @ManyToOne
     @JoinColumn(name = "supplier_id")
     private User supplier;
@@ -49,51 +45,50 @@ public class Product {
     @Column(precision = 15, scale = 2)
     private BigDecimal price = BigDecimal.ZERO;
 
-
     @Column(columnDefinition = "TEXT")
     private String description;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private ProductStatus status;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductItem> productItems;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> cartItems;
-    // Status Product
-    @NotNull
-    @Column(name = "status")
-    @Enumerated(EnumType.STRING)
-    private ProductStatus status;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductImage> images = new ArrayList<>();
+
+    @Transient
+    private MultipartFile[] uploadedFiles;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) createdAt = LocalDateTime.now();
+    }
+
     @Transient
     public int getAvailableQuantity() {
         if (productItems == null) return 0;
-
         return (int) productItems.stream()
                 .filter(item -> item.getStatus() != null
                         && item.getStatus() == ItemStatus.AVAILABLE)
                 .count();
     }
-    @PrePersist
-    public void prePersist() {
-        createdAt = LocalDateTime.now();
-    }
 
+    @Transient
     public String getMainImageUrl() {
-        if (images != null) {
+        if (images != null && !images.isEmpty()) {
             for (ProductImage img : images) {
-                if (Boolean.TRUE.equals(img.getIsMain())) {
-                    return img.getImageUrl();
-                }
+                if (Boolean.TRUE.equals(img.getIsMain())) return img.getImageUrl();
             }
-            if (!images.isEmpty()) {
-                return images.get(0).getImageUrl();
-            }
+            return images.get(0).getImageUrl();
         }
         return "/images/default.jpg";
     }
-
 }

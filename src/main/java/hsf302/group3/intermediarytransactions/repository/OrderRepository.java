@@ -6,6 +6,8 @@ import hsf302.group3.intermediarytransactions.util.constant.OrderStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -53,4 +55,16 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     Page<Order> findBySellerIdAndStatusAndOrderCodeContainingIgnoreCase(
             Integer sellerId, OrderStatus status, String keyword, Pageable pageable);
+
+    long countByBuyerIdAndStatus(Integer buyerId, OrderStatus status);
+
+    long countByBuyerIdAndStatusAndOrderCodeContainingIgnoreCase(
+            Integer buyerId, OrderStatus status, String keyword);
+
+    @Query("SELECT o FROM Order o JOIN FETCH o.orderItems WHERE o.id = :id")
+    Optional<Order> findByIdWithItems(@Param("id") Integer id);
+
+    Page<Order> findByBuyerIdAndStatusNot(Integer buyerId, OrderStatus statusNot, Pageable pageable);
+    Page<Order> findByBuyerIdAndStatusNotAndOrderCodeContainingIgnoreCase(
+            Integer buyerId, OrderStatus statusNot, String keyword, Pageable pageable);
 }

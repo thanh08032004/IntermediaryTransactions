@@ -39,7 +39,7 @@ public class HomePage {
         User user = userRepository.findByUsername(username).orElse(null);
         if (user == null) return BigDecimal.ZERO;
 
-        return walletRepository.findByUser_Id(user.getId())
+        return walletRepository.findByUserId(user.getId())
                 .map(Wallet::getBalance)
                 .orElse(BigDecimal.ZERO);
     }

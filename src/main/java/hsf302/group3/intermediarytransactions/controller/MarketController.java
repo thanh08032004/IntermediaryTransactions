@@ -7,6 +7,7 @@ import hsf302.group3.intermediarytransactions.repository.UserRepository;
 import hsf302.group3.intermediarytransactions.service.MarketService;
 import hsf302.group3.intermediarytransactions.util.SecurityUtil;
 import hsf302.group3.intermediarytransactions.util.constant.OrderStatus;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
+import java.util.List;
 
 @Controller
 @RequestMapping("/market")
@@ -32,24 +36,6 @@ public class MarketController {
         User user = userRepository.findByUsername(username).orElse(null);
         return user.getId();
     }
-
-    // MARKET
-//    @GetMapping("")
-//    public String market(Double minPrice, Double maxPrice,
-//                         @RequestParam(defaultValue = "0") int page,
-//                         Model model) {
-//
-//        Pageable pageable = PageRequest.of(page, 6);
-//
-//        Page<Order> orderPage = marketService.getMarketOrders(minPrice, maxPrice, pageable);
-//
-//        model.addAttribute("orders", orderPage.getContent());
-//        model.addAttribute("currentPage", page);
-//        model.addAttribute("totalPages", orderPage.getTotalPages());
-//
-//        return "market";
-//    }
-
     // MY BUY
     @GetMapping("/my-buy")
     @PreAuthorize("hasAuthority('MANAGE_ORDER')")
@@ -80,37 +66,40 @@ public class MarketController {
         return "my-buy";
     }
 
-    // MY SELL
-    @GetMapping("/my-sell")
-    @PreAuthorize("hasAuthority('MANAGE_ORDER')")
-    public String mySell(
-            @RequestParam(defaultValue = "ALL") String status,
-            @RequestParam(defaultValue = "") String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            Model model) {
+    @GetMapping("/order-history")
+    public String myBuyOrders(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "keyword", required = false) String keyword,
+            Model model,
+            HttpServletRequest request) {
 
         Integer userId = getUserId();
+        int size = 5;
 
-        if (userId == null) {
-            return "redirect:/login";
-        }
+        Page<Order> orderPage = marketService.getMyPaidOrders(userId, keyword, page, size);
+        List<Order> completedOrders = orderPage.getContent().stream()
+                .filter(o -> o.getStatus() == OrderStatus.COMPLETED)
+                .toList();
 
-        Pageable pageable = PageRequest.of(page, 5);
+        model.addAttribute("orders", completedOrders);
+        int totalPages = marketService.countMyPaidOrderPages(userId, keyword, size);
 
-        Page<Order> orderPage =
-                marketService.getMySell(userId, status, keyword, pageable);
-
-        model.addAttribute("currentStatus", status);
-        model.addAttribute("keyword", keyword);
-
-        model.addAttribute("orders", orderPage.getContent());
         model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", orderPage.getTotalPages());
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("currentUri", request.getRequestURI());
 
-        return "my-sell";
+        return "order-history";
     }
+    @PostMapping("/pay/balance/{id}")
+    @PreAuthorize("hasAuthority('MANAGE_ORDER')")
+    public String payWithBalance(@PathVariable Integer id) {
 
-    // BUY
+        Integer userId = getUserId();
+        marketService.payWithBalance(id, userId);
+
+        return "redirect:/market/my-buy";
+    }
     @PostMapping("/buy/{id}")
     @PreAuthorize("hasAuthority('MANAGE_ORDER')")
     public String buy(@PathVariable Integer id) {

@@ -1,5 +1,6 @@
 package hsf302.group3.intermediarytransactions.controller;
 
+import hsf302.group3.intermediarytransactions.entity.ItemStatus;
 import hsf302.group3.intermediarytransactions.entity.Product;
 import hsf302.group3.intermediarytransactions.entity.ProductItem;
 import hsf302.group3.intermediarytransactions.repository.ProductItemRepository;
@@ -14,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -56,12 +58,17 @@ public class SellerProductController {
         return "user/product/seller-add";
     }
 
-    //  CREATE
     @PostMapping("/add")
-    public String create(Product product, Authentication authentication) {
+    public String create(@ModelAttribute Product product,
+                         @RequestParam(name = "mainIndex", required = false) Integer mainIndex,
+                         Authentication authentication) {
+
         CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
         Integer sellerId = user.getUser().getId();
-        productService.create(product, sellerId);
+
+        MultipartFile[] files = product.getUploadedFiles(); // Lấy từ @Transient
+
+        productService.createWithImages(product, sellerId, files, mainIndex);
 
         return "redirect:/seller-products";
     }
@@ -81,10 +88,18 @@ public class SellerProductController {
 
     //  UPDATE
     @PostMapping("/edit/{id}")
-    public String update(@PathVariable Integer id, Product product, Authentication authentication) {
+    public String update(
+            @PathVariable Integer id,
+            @ModelAttribute Product product,
+            @RequestParam(value = "deleteImageIds", required = false) List<Integer> deleteImageIds,
+            Authentication authentication
+    ) {
         CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
         Integer sellerId = user.getUser().getId();
-        productService.update(id, product, sellerId);
+
+        MultipartFile[] files = product.getUploadedFiles();
+
+        productService.update(id, product, sellerId, files, deleteImageIds);
 
         return "redirect:/seller-products";
     }
@@ -96,23 +111,5 @@ public class SellerProductController {
         productService.delete(id, sellerId);
 
         return "redirect:/seller-products";
-    }
-    @GetMapping("/{id}/items")
-    public String viewProductItems(
-            @PathVariable("id") int productId,
-            Authentication authentication,
-            Model model
-    ) {
-        CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
-        Integer sellerId = user.getUser().getId();
-
-        Product product = productService.getById(productId, sellerId);
-
-        List<ProductItem> items = productItemService.findByProductId(productId);
-
-        model.addAttribute("product", product);
-        model.addAttribute("items", items);
-
-        return "user/product/product-item";
     }
 }

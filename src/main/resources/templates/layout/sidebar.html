@@ -85,10 +85,10 @@
                     <i class="bi bi-cart me-2"></i> Cart
                 </a>
 
-                <!-- Seller Intermediary Orders -->
-                <a th:href="@{/market/my-sell}" class="d-block py-2"
-                   th:classappend="${currentUri.startsWith('/market/my-sell')} ? 'active'">
-                    <i class="bi bi-cart me-2"></i> Seller Intermediary Orders
+                <!-- History -->
+                <a th:href="@{/market/order-history}" class="d-block py-2"
+                   th:classappend="${currentUri.startsWith('/market/order-history')} ? 'active'">
+                    <i class="bi bi-cart me-2"></i> Orders History
                 </a>
 
                 <!-- Buyer Intermediary Orders -->

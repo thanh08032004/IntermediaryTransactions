@@ -44,6 +44,10 @@
 
                             <!-- FORM CONFIRM -->
                             <form th:action="@{/checkout/confirm}" method="post">
+                                <div th:each="item : ${cartItems != null ? cartItems : cart.items}">
+                                    <input type="hidden" name="productIds" th:value="${item.product.id}" />
+                                    <input type="hidden" name="quantities" th:value="${item.quantity}" />
+                                </div>
                                 <div class="d-grid mt-4">
                                     <button class="btn btn-success btn-lg rounded-3">
                                         <i class="bi bi-bag-check"></i> Confirm Order

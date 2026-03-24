@@ -1,5 +1,6 @@
 package hsf302.group3.intermediarytransactions.service;
 
+import hsf302.group3.intermediarytransactions.entity.OrderItem;
 import hsf302.group3.intermediarytransactions.entity.ProductItem;
 
 import java.util.List;
@@ -13,4 +14,10 @@ public interface ProductItemService {
     ProductItem save(ProductItem item);
 
     void delete(Integer id);
+
+    ProductItem addItem(Integer productId, ProductItem item);
+
+    List<ProductItem> getAvailableItems(Integer productId, int quantity);
+
+    void assignToOrderItem(OrderItem orderItem, List<ProductItem> items);
 }
