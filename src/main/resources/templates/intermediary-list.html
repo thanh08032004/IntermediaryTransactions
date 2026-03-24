@@ -36,7 +36,7 @@
                     <a href="/admin/products/add"
                        class="btn btn-success btn-sm"
                        sec:authorize="hasAuthority('MANAGE_PRODUCTS')">
-                        <i class="bi bi-plus-circle"></i> Add Product
+                        <i class="bi bi-plus-circle"></i> Add Order Intermediary
                     </a>
                 </div>
 
@@ -79,6 +79,7 @@
                         <table class="table table-hover align-middle">
                             <thead class="table-secondary">
                             <tr>
+                                <th>Image</th>
                                 <th>Invoice ID</th>
                                 <th>Code</th>
                                 <th>Subject</th>
@@ -91,6 +92,9 @@
 
                             <tbody>
                             <tr th:each="inv : ${invoices}">
+                                <td>
+                                    <img th:src="${inv.mainImageUrl}" alt="Invoice Image" style="width:80px;height:60px;object-fit:cover;" />
+                                </td>
                                 <td th:text="${inv.invoiceId}"></td>
                                 <td th:text="${inv.invoiceCode}"></td>
                                 <td th:text="${inv.subject}"></td>

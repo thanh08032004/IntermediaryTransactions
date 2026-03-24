@@ -93,12 +93,28 @@ public class MarketController {
     }
     @PostMapping("/pay/balance/{id}")
     @PreAuthorize("hasAuthority('MANAGE_ORDER')")
-    public String payWithBalance(@PathVariable Integer id) {
+    public String payWithBalance(@PathVariable Integer id, Model model) {
 
         Integer userId = getUserId();
-        marketService.payWithBalance(id, userId);
 
-        return "redirect:/market/my-buy";
+        try {
+            marketService.payWithBalance(id, userId);
+            model.addAttribute("success", "Thanh toán thành công!");
+            return "redirect:/market/my-buy"; // hoặc redirect + flash attribute
+        } catch (RuntimeException e) {
+            if ("Insufficient balance".equals(e.getMessage())) {
+                model.addAttribute("error", "Số dư không đủ. Vui lòng nạp thêm.");
+            } else if ("Not enough product items".equals(e.getMessage())) {
+                model.addAttribute("error", "Sản phẩm không đủ số lượng để bán.");
+            } else {
+                model.addAttribute("error", e.getMessage());
+            }
+
+            Order order = marketService.getOrderById(id);
+            model.addAttribute("order", order);
+
+            return "order-detail"; // trở lại trang chi tiết đơn hàng
+        }
     }
     @PostMapping("/buy/{id}")
     @PreAuthorize("hasAuthority('MANAGE_ORDER')")

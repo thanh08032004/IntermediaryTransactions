@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "intermediary_invoice")
@@ -43,6 +45,9 @@ public class IntermediaryInvoice {
     @Column(name = "buyer_total")
     private BigDecimal buyerTotal;
 
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<IntermediaryInvoiceImage> images = new ArrayList<>();
+
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
@@ -63,4 +68,16 @@ public class IntermediaryInvoice {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+    @Transient
+    public String getMainImageUrl() {
+        if (!images.isEmpty()) {
+            // tìm ảnh chính
+            return images.stream()
+                    .filter(img -> Boolean.TRUE.equals(img.getIsMain()))
+                    .map(IntermediaryInvoiceImage::getImageUrl)
+                    .findFirst()
+                    .orElse(images.get(0).getImageUrl());
+        }
+        return "/images/default.jpg";
+    }
 }

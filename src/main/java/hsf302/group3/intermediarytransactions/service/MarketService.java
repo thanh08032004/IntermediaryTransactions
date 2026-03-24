@@ -189,7 +189,11 @@ public class MarketService {
 
         return orderRepository.findByBuyerIdAndStatus(userId, OrderStatus.COMPLETED, pageable);
     }
-
+    @Transactional
+    public Order getOrderById(Integer orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+    }
     public int countMyPaidOrderPages(Integer userId, String keyword, int size) {
         long totalItems;
 

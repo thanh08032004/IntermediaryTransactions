@@ -20,10 +20,10 @@ public class UserProfile {
     private String fullname;
 
 
-    @NotBlank(message = "The phone number must not be left blank.")
-    @Pattern(regexp = "^(0|\\+84)(\\d{9})$", message = "Invalid phone number")
+    @Pattern(regexp = "^(0|\\+84)(\\d{9})?$", message = "Invalid phone number")
     @Column(name = "phone", length = 20)
     private String phone;
+
     @Column(unique = true, length = 100)
     private String email;
 
