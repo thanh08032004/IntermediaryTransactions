@@ -43,10 +43,45 @@
                 <i class="bi bi-key"></i> Permissions
             </a>
 
-            <a th:href="@{/admin/orders}"
-               th:classappend="${currentUri.startsWith('/admin/orders')} ? 'active'">
-                <i class="bi bi-receipt"></i> Orders
+            <a class="d-flex justify-content-between align-items-center"
+               data-bs-toggle="collapse"
+               href="#marketMenu"
+               role="button"
+               aria-expanded="false"
+               aria-controls="marketMenu"
+               th:classappend="${currentUri.startsWith('/buyer-products') or currentUri.startsWith('/cart') or currentUri.startsWith('/market/my-sell') or currentUri.startsWith('/market/my-buy')} ? 'active'">
+                <span><i class="bi bi-bag me-2"></i> Market</span>
+                <i class="bi bi-chevron-down"></i>
             </a>
+
+            <div class="collapse ps-4"
+                 id="marketMenu"
+                 th:classappend="${currentUri.startsWith('/buyer-products') or currentUri.startsWith('/cart') or currentUri.startsWith('/market/my-sell') or currentUri.startsWith('/market/my-buy')} ? 'show'">
+
+                <!-- Default Market page (List product) -->
+                <a th:href="@{/buyer-products}" class="d-block py-2"
+                   th:classappend="${currentUri.startsWith('/buyer-products')} ? 'active'">
+                    <i class="bi bi-list-ul me-2"></i> Product List
+                </a>
+
+                <!-- Cart -->
+                <a th:href="@{/cart}" class="d-block py-2"
+                   th:classappend="${currentUri.startsWith('/cart')} ? 'active'">
+                    <i class="bi bi-cart me-2"></i> Cart
+                </a>
+
+                <!-- History -->
+                <a th:href="@{/market/order-history}" class="d-block py-2"
+                   th:classappend="${currentUri.startsWith('/market/order-history')} ? 'active'">
+                    <i class="bi bi-cart me-2"></i> Orders History
+                </a>
+
+                <!-- Buyer Intermediary Orders -->
+                <a th:href="@{/market/my-buy}" class="d-block py-2"
+                   th:classappend="${currentUri.startsWith('/market/my-buy')} ? 'active'">
+                    <i class="bi bi-cart me-2"></i> Buyer Intermediary Orders
+                </a>
+            </div>
 
         </div>
 
