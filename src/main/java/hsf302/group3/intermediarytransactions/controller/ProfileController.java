@@ -1,8 +1,10 @@
 package hsf302.group3.intermediarytransactions.controller;
 
+import hsf302.group3.intermediarytransactions.dto.UserProfileDto;
 import hsf302.group3.intermediarytransactions.entity.User;
 import hsf302.group3.intermediarytransactions.entity.UserProfile;
 import hsf302.group3.intermediarytransactions.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,36 +31,42 @@ public class ProfileController {
 
     @GetMapping("/edit")
     public String editProfileForm(Model model, Principal principal) {
+
         User user = userService.findByUsername(principal.getName());
-        if (user.getProfile() == null) {
-            user.setProfile(new UserProfile());
+        UserProfile profile = user.getProfile();
+
+        UserProfileDto dto = new UserProfileDto();
+        if (profile != null) {
+            dto.setFullname(profile.getFullname());
+            dto.setPhone(profile.getPhone());
+            dto.setEmail(profile.getEmail());
+            dto.setGender(profile.getGender());
+            dto.setAvatar(profile.getAvatar());
+            dto.setDateOfBirth(profile.getDateOfBirth());
+            dto.setDescription(profile.getDescription());
         }
-        model.addAttribute("user", user);
+
+        model.addAttribute("profile", dto);
         return "profile/edit";
     }
 
-//    @PostMapping("/update")
-//    public String updateProfile(@ModelAttribute("user") User user, Principal principal) {
-//        userService.updateMyProfile(principal.getName(), user.getProfile());
-//        return "redirect:/profile?success";
-//    }
-@PostMapping("/update")
-public String updateProfile(@ModelAttribute("user") User user,
-                            BindingResult bindingResult,
-                            Principal principal,
-                            Model model) {
+    @PostMapping("/update")
+    public String updateProfile(@Valid @ModelAttribute("profile") UserProfileDto dto,
+                                BindingResult result,
+                                Principal principal,
+                                Model model) {
 
-    if (bindingResult.hasErrors()) {
-        System.out.println("Binding errors: " + bindingResult.getAllErrors());
-        return "profile/edit";
-    }
+        if (result.hasErrors()) {
+            return "profile/edit";
+        }
 
-    try {
-        userService.updateMyProfile(principal.getName(), user.getProfile());
-        return "redirect:/profile?success";
-    } catch (Exception e) {
-        model.addAttribute("errorMessage", e.getMessage());
-        return "profile/edit";
+        try {
+            userService.updateMyProfile(principal.getName(), dto);
+            return "redirect:/profile?success";
+
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "profile/edit";
+        }
     }
-}
 }

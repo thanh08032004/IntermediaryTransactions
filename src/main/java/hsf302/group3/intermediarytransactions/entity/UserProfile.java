@@ -1,6 +1,7 @@
 package hsf302.group3.intermediarytransactions.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
@@ -16,6 +17,7 @@ public class UserProfile {
     @Column(name = "user_id")
     private Integer userId;
 
+    @NotBlank(message = "The full name must not be left blank.")
     @Column(nullable = false, length = 100)
     private String fullname;
 
@@ -24,6 +26,7 @@ public class UserProfile {
     @Column(name = "phone", length = 20)
     private String phone;
 
+    @Email(message = "Invalid email")
     @Column(unique = true, length = 100)
     private String email;
 

@@ -66,14 +66,20 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-bold">Full Name</label>
-                            <input type="text" th:field="*{profile.fullname}" class="form-control"
-                                   placeholder="Enter full name" required>
+                            <input type="text" th:field="*{profile.fullname}"
+                                   th:classappend="${#fields.hasErrors('profile.fullname')} ? 'is-invalid'"
+                                   class="form-control" placeholder="Enter full name" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('profile.fullname')}"
+                                 th:errors="*{profile.fullname}"></div>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label fw-bold">Email Address</label>
-                            <input type="email" th:field="*{profile.email}" class="form-control"
-                                   placeholder="example@domain.com">
+                            <input type="email" th:field="*{profile.email}"
+                                   th:classappend="${#fields.hasErrors('profile.email')} ? 'is-invalid'"
+                                   class="form-control" placeholder="example@domain.com">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('profile.email')}"
+                                 th:errors="*{profile.email}"></div>
                         </div>
 
                         <div class="mb-3">

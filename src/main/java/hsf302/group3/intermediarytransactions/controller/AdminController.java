@@ -55,9 +55,23 @@ public class AdminController {
 
     @PostMapping("/users/save")
     @PreAuthorize("hasAuthority('MANAGE_USERS')")
-    public String saveUser(@ModelAttribute("user") User user) {
-        userService.createNewUser(user);
-        return "redirect:/admin/users?success=added";
+    public String saveUser(@Valid @ModelAttribute("user") User user,
+                           BindingResult result,
+                           Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("roles", roleRepository.findAll());
+            return "admin/user-add";
+        }
+        try {
+            // set password từ rawPassword trước khi encode
+            user.setPassword(user.getRawPassword());
+            userService.createNewUser(user);
+            return "redirect:/admin/users?success=added";
+        } catch (RuntimeException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("roles", roleRepository.findAll());
+            return "admin/user-add";
+        }
     }
 
     @GetMapping("/users/edit/{id}")
@@ -74,7 +88,6 @@ public class AdminController {
                              BindingResult result,
                              RedirectAttributes ra,
                              Model model) {
-
         if (result.hasErrors()) {
             model.addAttribute("roles", roleRepository.findAll());
             return "admin/user-edit";
@@ -83,8 +96,9 @@ public class AdminController {
             userService.updateUser(user);
             return "redirect:/admin/users?success=updated";
         } catch (RuntimeException e) {
-            ra.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/admin/users/edit/" + user.getId();
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("roles", roleRepository.findAll());
+            return "admin/user-edit";
         }
     }
 

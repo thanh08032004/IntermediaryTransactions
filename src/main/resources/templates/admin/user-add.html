@@ -12,6 +12,12 @@
             <h4>Create New User Account</h4>
         </div>
         <div class="card-body" sec:authorize="hasAuthority('MANAGE_USERS')">
+            <!-- Error message từ Service (runtime exception) -->
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
+                <i class="bi bi-x-octagon-fill me-2"></i>
+                <span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
             <form th:action="@{/admin/users/save}" th:object="${user}" method="post">
                 <div class="row">
                     <div class="col-md-6 border-end">
@@ -22,7 +28,13 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Password</label>
-                            <input type="password" th:field="*{password}" class="form-control" required>
+                            <input type="password"
+                                   th:field="*{rawPassword}"
+                                   th:classappend="${#fields.hasErrors('rawPassword')} ? 'is-invalid'"
+                                   class="form-control">
+                            <div class="invalid-feedback"
+                                 th:if="${#fields.hasErrors('rawPassword')}"
+                                 th:errors="*{rawPassword}"></div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Role</label>

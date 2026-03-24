@@ -1,5 +1,6 @@
 package hsf302.group3.intermediarytransactions.service;
 
+import hsf302.group3.intermediarytransactions.dto.UserProfileDto;
 import hsf302.group3.intermediarytransactions.entity.Role;
 import hsf302.group3.intermediarytransactions.entity.User;
 import hsf302.group3.intermediarytransactions.entity.UserProfile;
@@ -53,16 +54,23 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
     }
 
-    /** Lấy user theo username kèm profile, role.permissions, wallet */
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found: " + username));
-    }
 
-    /** Tạo mới user */
+
     @Transactional
     public void createNewUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        //trung username
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            throw new RuntimeException("The username already exists!");
+        }
+        // trung email
+        if (user.getProfile() != null && user.getProfile().getEmail() != null) {
+            if (userProfileRepository.existsByEmailAndUserIdNot(
+                    user.getProfile().getEmail(), 0)) {
+                throw new RuntimeException("The email address has already been used!");
+            }
+        }
+
+//        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setActive(true);
 
         if (user.getProfile() != null) {
@@ -72,20 +80,18 @@ public class UserService {
         userRepository.save(user);
     }
 
-    /** Cập nhật user */
     @Transactional
     public void updateUser(User userForm) {
         User existingUser = getUserById(userForm.getId());
 
-        // Kiểm tra trùng email/phone
         String newEmail = userForm.getProfile().getEmail();
         String newPhone = userForm.getProfile().getPhone();
 
         if (userProfileRepository.existsByEmailAndUserIdNot(newEmail, userForm.getId())) {
-            throw new RuntimeException("Email này đã được sử dụng!");
+            throw new RuntimeException("This email address is already in use!");
         }
         if (userProfileRepository.existsByPhoneAndUserIdNot(newPhone, userForm.getId())) {
-            throw new RuntimeException("Số điện thoại này đã được sử dụng!");
+            throw new RuntimeException("This phone number is already in use!");
         }
 
         existingUser.setActive(userForm.getActive());
@@ -118,25 +124,36 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    /** Cập nhật profile của chính user */
-    @Transactional
-    public void updateMyProfile(String username, UserProfile updatedProfile) {
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+    }
+    public UserProfileDto getProfileDto(String username) {
         User user = findByUsername(username);
-        UserProfile profile = user.getProfile();
+        return new UserProfileDto(user);
+    }
 
+    @Transactional
+    public void updateMyProfile(String username, UserProfileDto dto) {
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        UserProfile profile = user.getProfile();
         if (profile == null) {
-            updatedProfile.setUser(user);
-            updatedProfile.setUserId(user.getId());
-            user.setProfile(updatedProfile);
-        } else {
-            profile.setFullname(updatedProfile.getFullname());
-            profile.setEmail(updatedProfile.getEmail());
-            profile.setPhone(updatedProfile.getPhone());
-            profile.setAvatar(updatedProfile.getAvatar());
-            profile.setGender(updatedProfile.getGender());
-            profile.setDateOfBirth(updatedProfile.getDateOfBirth());
-            profile.setDescription(updatedProfile.getDescription());
+            profile = new UserProfile();
+            profile.setUser(user);
+            profile.setUserId(user.getId());
+            user.setProfile(profile);
         }
+
+        profile.setFullname(dto.getFullname());
+        profile.setEmail(dto.getEmail());
+        profile.setPhone(dto.getPhone());
+        profile.setAvatar(dto.getAvatar());
+        profile.setGender(dto.getGender());
+        profile.setDateOfBirth(dto.getDateOfBirth());
+        profile.setDescription(dto.getDescription());
 
         userRepository.save(user);
     }

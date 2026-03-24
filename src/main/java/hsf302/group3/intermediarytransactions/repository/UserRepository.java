@@ -1,5 +1,6 @@
 package hsf302.group3.intermediarytransactions.repository;
 
+import hsf302.group3.intermediarytransactions.dto.UserProfileDto;
 import hsf302.group3.intermediarytransactions.entity.User;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
