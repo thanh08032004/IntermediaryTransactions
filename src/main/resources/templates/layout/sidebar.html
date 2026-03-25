@@ -18,11 +18,6 @@
 
             <div class="sidebar-title mt-3">ADMIN</div>
 
-            <a th:href="@{/admin/dashboard}"
-               th:classappend="${currentUri.startsWith('/admin/dashboard')} ? 'active'">
-                <i class="bi bi-speedometer2"></i> Dashboard
-            </a>
-
             <a th:href="@{/admin/users}"
                th:classappend="${currentUri.startsWith('/admin/users')} ? 'active'">
                 <i class="bi bi-people"></i> Users
