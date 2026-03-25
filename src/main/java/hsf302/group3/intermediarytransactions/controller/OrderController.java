@@ -24,7 +24,6 @@ import java.util.List;
 @Controller
 @RequestMapping("/checkout")
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyRole('ADMIN','USER')")
 public class OrderController {
 
     private final CartService cartService;
@@ -50,6 +49,7 @@ public class OrderController {
     }
 
     @PostMapping("/confirm")
+    @PreAuthorize("hasAuthority('MANAGE_ORDER')")
     public String confirmOrder(@RequestParam("productIds") List<Integer> productIds,
                                @RequestParam("quantities") List<Integer> quantities,
                                @AuthenticationPrincipal UserDetails userDetails,
@@ -78,6 +78,7 @@ public class OrderController {
         return "create-order";
     }
     @GetMapping("/{orderId}/give-account")
+    @PreAuthorize("hasAuthority('MANAGE_ORDER')")
     public String giveAccount(@PathVariable Integer orderId, Model model) {
         Order order = orderRepository.findByIdWithItems(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));

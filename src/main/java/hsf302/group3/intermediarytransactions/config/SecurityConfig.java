@@ -38,15 +38,15 @@ public class SecurityConfig {
                         .requestMatchers("/login", "/register", "/forgot-password", "/reset-password/**", "/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers("/sepay-webhook").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/cart/**").hasAuthority("MANAGE_CART")
+                        .requestMatchers("/checkout/**").hasAuthority("MANAGE_ORDER")
                         .anyRequest().authenticated()
                 )
                 .formLogin(login -> login
                         .loginPage("/login")
-                        //.defaultSuccessUrl("/", true) // bỏ dòng này
-                        .successHandler(customLoginSuccessHandler) // sử dụng handler để redirect sau login
+                        .successHandler(customLoginSuccessHandler)
                         .permitAll()
                 )
-                //.rememberMe(...) // giữ nguyên nếu cần
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")

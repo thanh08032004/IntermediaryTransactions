@@ -65,13 +65,13 @@
                 </a>
 
                 <!-- Cart -->
-                <a th:href="@{/cart}" class="d-block py-2"
+                <a th:href="@{/cart}" class="d-block py-2" sec:authorize="hasAuthority('MANAGE_CART')"
                    th:classappend="${currentUri.startsWith('/cart')} ? 'active'">
                     <i class="bi bi-cart me-2"></i> Cart
                 </a>
 
                 <!-- History -->
-                <a th:href="@{/market/order-history}" class="d-block py-2"
+                <a th:href="@{/market/order-history}" class="d-block py-2" sec:authorize="hasAuthority('MANAGE_ORDER')"
                    th:classappend="${currentUri.startsWith('/market/order-history')} ? 'active'">
                     <i class="bi bi-cart me-2"></i> Orders History
                 </a>
@@ -125,7 +125,7 @@
                 </a>
 
                 <!-- History -->
-                <a th:href="@{/market/order-history}" class="d-block py-2"
+                <a th:href="@{/market/order-history}" class="d-block py-2" sec:authorize="hasAuthority('MANAGE_ORDER')"
                    th:classappend="${currentUri.startsWith('/market/order-history')} ? 'active'">
                     <i class="bi bi-cart me-2"></i> Orders History
                 </a>

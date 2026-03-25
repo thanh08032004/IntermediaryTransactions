@@ -5,6 +5,7 @@ import hsf302.group3.intermediarytransactions.entity.User;
 import hsf302.group3.intermediarytransactions.security.CustomUserDetails;
 import hsf302.group3.intermediarytransactions.service.CartService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +22,7 @@ public class CartController {
     private final CartService cartService;
 
     @PostMapping("/add")
+    @PreAuthorize("hasAuthority('MANAGE_CART')")
     public String addToCart(@AuthenticationPrincipal CustomUserDetails userDetails,
                             @RequestParam Integer productId,
                             @RequestParam(defaultValue = "1") Integer quantity,
@@ -39,6 +41,7 @@ public class CartController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('MANAGE_CART')")
     public String viewCart(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
         User user = userDetails.getUser();
         Cart cart = cartService.getCartByUser(user);
@@ -52,6 +55,7 @@ public class CartController {
     }
 
     @PostMapping("/update")
+    @PreAuthorize("hasAuthority('MANAGE_CART')")
     public String updateCart(@AuthenticationPrincipal CustomUserDetails userDetails,
                              @RequestParam Integer productId,
                              @RequestParam Integer quantity) {
@@ -61,6 +65,7 @@ public class CartController {
     }
 
     @PostMapping("/remove")
+    @PreAuthorize("hasAuthority('MANAGE_CART')")
     public String removeFromCart(@AuthenticationPrincipal CustomUserDetails userDetails,
                                  @RequestParam Integer productId) {
         User user = userDetails.getUser();
